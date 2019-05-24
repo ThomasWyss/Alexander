@@ -1,0 +1,21 @@
+function [ err ] = plotSPVV_Time( Plot )
+%UNTITLED2 Summary of this function goes here
+%   Detailed explanation goes here
+    figure('Name',['Position ',Plot.Text.szFileName(1:end-4),' plotPosSignal']);  % Fig 2
+    ax1=subplot(1,1,1);
+    plot(ax1,Plot.RightV.dTime,Plot.RightV.SPV,'ro','linewidth', 1.2,'MarkerSize',7.0); hold on;
+    plot(ax1,Plot.LeftV.dTime,Plot.LeftV.SPV,'bo','linewidth', 1.2,'MarkerSize',7.0); hold on;
+    line(get(gca,'xlim'),[0,0],'Color',[0.0 0.0 0.0],'LineWidth',1.5);
+%     plot(ax1,dTime(1:end-1),EyePosDegMedian(1:end-1,1),'r','linewidth', 1.2); hold on;
+%     plot(ax1,dTime(1:end-1),EyePosDegMedian(1:end-1,2),'g','linewidth', 1.2); hold on;
+    %title([szFileName,'   ',fData.Examination, '   ', fData.Condition]);
+    xlabel('SPV [\circ/s]');
+    ylabel('Position');
+    legend('Right SPV V','Left SPV V');
+%     xlim([108.8 110.4]);
+    ylim([-70, 70]);
+    grid on;
+
+err=-777;
+end
+
