@@ -24,19 +24,22 @@ function [ outPlot ] = calcSaccNystV(Plot)
  %  dTimeDiffPre time length of previous nystagmus beat 
  %-------------------------------------------------------------------------   
 
-    [Plot, PreRotL , PreRotR]= Eval_FitV(Plot, idxStart, idxStop, 'pre');
-    [Plot, PostRotL , PostRotR] =Eval_FitV(Plot, idxStop, idxEnd, 'post');
-    Plot.LRsV=median([PreRotL.Pos,PreRotR.Pos,PostRotL.Pos,PostRotR.Pos]);
-    [Plot, PreRotL , PreRotR]= Eval_FitV(Plot, idxStart, idxStop, 'pre');
+ %--- Eval_Fit is called twice : workaround to get mean position
+    [Plot, PreRotL , PreRotR]= Eval_FitV(Plot, idxStart, idxStop,true);
+    [Plot, PostRotL , PostRotR] =Eval_FitV(Plot, idxStop, idxEnd, false);
+    Plot.LRsH=mean([PreRotL.Pos,PreRotR.Pos,PostRotL.Pos,PostRotR.Pos]);
+
+    [iTmp,~]=size(Plot.endSPVH_S(:,1));
+    NystSignV=ones(iTmp,1);
+    Plot.NystSignV=NystSignV;   
+    
+    [Plot, PreRotL , PreRotR]= Eval_Fit(Plot, idxStart, idxStop, true);
     Plot.PreRotVL=PreRotL;
     Plot.PreRotVR=PreRotR;
     
-    % --- send end time
-    Plot.LRsV=mean([PostRotL.Pos,PostRotR.Pos]);
-    [Plot, PostRotL , PostRotR] =Eval_FitV(Plot, idxStop, idxEnd, 'post');
+    [Plot, PostRotL , PostRotR] =Eval_Fit(Plot, idxStop, idxEnd, false);
     Plot.PostRotVL=PostRotL;
     Plot.PostRotVR=PostRotR;
-    Plot.endRotationTime=endRotationTime;
 
     outPlot=Plot;     
         
