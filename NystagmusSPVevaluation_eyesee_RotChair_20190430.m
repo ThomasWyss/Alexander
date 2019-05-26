@@ -401,7 +401,7 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
             Plot=calcSaccNystH(Plot);
 %             Plot=deleteInvalid(Plot);
 
-            plotSPVH_Time_Graph(Plot);
+%             plotSPVH_Time_Graph(Plot);
 %             plotSPVH_Position_Graph(Plot,Out(nn_out)); 
             Plot=plotSPVH_Time(Plot);
 %             plotSPVH_TimeConst(Plot);

@@ -11,13 +11,18 @@ function [ outPlot ] = plotSPVH_Time( Plot )
     Local.PostRotHL.SPV=medfilt1(Plot.PostRotHL.SPV,3);
     Local.PostRotHR.SPV=medfilt1(Plot.PostRotHR.SPV,3);
     Local.PostRotHL.SPV=medfilt1(Plot.PostRotHL.SPV,3);
-%     Local.PostRotHR.SPV=medfilt1(Plot.PostRotHR.SPV,5);
-%     Local.PostRotHL.SPV=medfilt1(Plot.PostRotHL.SPV,5);
 
     line(get(gca,'xlim'),[0,0],'Color',[0.0 0.0 0.0],'LineWidth',1.5);
     plot(ax1, Plot.headInertialTime,Plot.HeadMovVect/10,'color',[0.5 0.5 0.5],'linewidth', 1.2,'MarkerSize',7.0);   
     ylim([-70, 70]);
     grid on;
+
+    tx1=text(Plot.startRotationTime-12,15.0,[ sprintf('Start %2.1f',Plot.startRotationTime), '\rightarrow ']);
+    tx1.Color='r';
+    tx1=text(Plot.stopRotationTime,15.0,['\leftarrow ', sprintf('Stopp %2.1f',Plot.stopRotationTime)]);
+    tx1.Color='r';
+    tx1=text(Plot.endRotationTime,15.0,['\leftarrow ', sprintf('End Data %2.1f',Plot.endRotationTime)]);
+    tx1.Color='r';
 
     plot(ax1,Plot.PreRotHR.dTime,Local.PreRotHR.SPV,'ro','linewidth', 1.2,'MarkerSize',7.0);
     plot(ax1,Plot.PreRotHL.dTime,Local.PreRotHL.SPV,'bo','linewidth', 1.2,'MarkerSize',7.0);
