@@ -33,11 +33,11 @@ function [ outPlot ] = calcSaccNystV(Plot)
     NystSignV=ones(iTmp,1);
     Plot.NystSignV=NystSignV;   
     
-    [Plot, PreRotL , PreRotR]= Eval_Fit(Plot, idxStart, idxStop, true);
+    [Plot, PreRotL , PreRotR]= Eval_FitV(Plot, idxStart, idxStop, true);
     Plot.PreRotVL=PreRotL;
     Plot.PreRotVR=PreRotR;
     
-    [Plot, PostRotL , PostRotR] =Eval_Fit(Plot, idxStop, idxEnd, false);
+    [Plot, PostRotL , PostRotR] =Eval_FitV(Plot, idxStop, idxEnd, false);
     Plot.PostRotVL=PostRotL;
     Plot.PostRotVR=PostRotR;
 
