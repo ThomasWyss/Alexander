@@ -1,7 +1,6 @@
 function [ outPlot ] = calcSaccNystH(Plot)
 
-    
- 
+
     idxStart=1;
     while Plot.startSPVH_S(idxStart)<Plot.idxStartRotTime
         idxStart=idxStart+1;

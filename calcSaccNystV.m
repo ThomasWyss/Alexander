@@ -1,32 +1,22 @@
 function [ outPlot ] = calcSaccNystV(Plot)
 
 
-    for jj=30:size(Plot.HeadMovVect)
-        if Plot.HeadMovVect(jj) >190
-            Plot.startRotationIdx=jj;
-            Plot.startRotationTime=Plot.headInertialTime(jj);
-            aaa=Plot.startSPVV_S(Plot.startSPVV_S>Plot.startRotationIdx);
-            break
-        end
+    idxStart=1;
+    while Plot.startSPVV_S(idxStart)<Plot.idxStartRotTime
+        idxStart=idxStart+1;
     end
     
-    [jjEnd, ~] = size(Plot.HeadMovVect);
-    if jjEnd>=24000.0
-        jjEnd=24000.0;
-    end  
-    for jj=jjEnd:-1:30
-        if Plot.HeadMovVect(jj) >190
-            Plot.stopRotationIdx=jj;
-            Plot.stopRotationTime=Plot.headInertialTime(jj);
-            bbb=Plot.stoppSPVV_S(Plot.stoppSPVV_S>Plot.stopRotationIdx);
-            break
-        end
+    [idxStop, ~] = size(Plot.startSPVH_S);
+    while Plot.startSPVV_S(idxStop)>Plot.idxEndRotTime
+        idxStop=idxStop-1;
     end
-    % --- find idx of SPVH_S for time idx
-    idxStart=find  (Plot.startSPVV_S==aaa(1));
-    idxStop=find  (Plot.stoppSPVV_S==bbb(1));
     [idxEnd,~]=size(Plot.stoppSPVV_S);
+    startRotationTime=Plot.headInertialTime(Plot.stoppSPVV_S(idxStart));
+    stopRotationTime=Plot.headInertialTime(Plot.stoppSPVV_S(idxStop));
     endRotationTime=Plot.headInertialTime(end);
+    Plot.endRotationTime=endRotationTime;    
+    Plot.startRotationTime=startRotationTime;    
+    Plot.stopRotationTime=stopRotationTime;  
  %-------------------------------------------------------------------------   
  %  seperate Left & Right gaze pre rotatorical nystagmus
  %  differentiate nystagmus & saccades
