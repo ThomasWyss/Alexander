@@ -15,6 +15,9 @@ function [ outPlot ] = calcSaccNystH(Plot)
     startRotationTime=Plot.headInertialTime(Plot.stoppSPVH_S(idxStart));
     stopRotationTime=Plot.headInertialTime(Plot.stoppSPVH_S(idxStop));
     endRotationTime=Plot.headInertialTime(end);
+    Plot.endRotationTime=endRotationTime;    
+    Plot.startRotationTime=startRotationTime;    
+    Plot.stopRotationTime=stopRotationTime;    
  %-------------------------------------------------------------------------   
  %  seperate Left & Right gaze pre rotatorical nystagmus
  %  differentiate nystagmus & saccades
@@ -39,9 +42,6 @@ function [ outPlot ] = calcSaccNystH(Plot)
     [Plot, PostRotL , PostRotR] =Eval_Fit(Plot, idxStop, idxEnd, false);
     Plot.PostRotHL=PostRotL;
     Plot.PostRotHR=PostRotR;
-    Plot.endRotationTime=endRotationTime;    
-    Plot.startRotationTime=startRotationTime;    
-    Plot.stopRotationTime=stopRotationTime;    
             
     outPlot=Plot;    
 end

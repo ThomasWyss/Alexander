@@ -3,24 +3,11 @@ function [outPlot, outPlotL, outPlotR ] = Eval_Fit( Local, idxStart, idxStop, pr
     iDataIdxR=1;
     iDataIdxL=1;
     clear RightH LeftH;
- 
-%     LeftH.dTime(1)=Local.dTime(Local.startSPVH_S(5));
-%     LeftH.SPV(1)=20;
-%     LeftH.idx(1)=5;
-%     RightH.dTime(1)=Local.dTime(Local.startSPVH_S(5));
-%     RightH.SPV(1)=20;
-%     RightH.Pos(1)=Local.EyePosDeg(Local.startSPVH_S(5),1);
-%     RightH.idx(1)=5;
-
-    
-    
-   
+    % --- reset the NystSignH before start of rotation ---    
     for ii=1:idxStart-1
          Local.NystSignH(ii)=false;
     end
-        
-    
-    endRotTime=Local.headInertialTime(Local.stoppSPVH_S(idxStop));
+           
     if Local.HeadMovVect(5000)>180
         rotDir=1;
     else
@@ -46,7 +33,7 @@ function [outPlot, outPlotL, outPlotR ] = Eval_Fit( Local, idxStart, idxStop, pr
         
         if (abs(meanSPV)<abs(meanSPVPre) && ((NystSign==2  || NystSign==3)))...
                 && Local.SPVDeltaH(idx)<Local.NystBeatDeltaMax && abs(Local.meanSPVH(idx))>Local.minSPV...
-                && Local.dTime(Local.startSPVH_S(idx))<endRotTime
+                && Local.dTime(Local.startSPVH_S(idx))<Local.endRotationTime
 %             Local.NystSignH(idx)=true;
             Local.NystSignH(idx-1)=false;
             
@@ -54,11 +41,19 @@ function [outPlot, outPlotL, outPlotR ] = Eval_Fit( Local, idxStart, idxStop, pr
         
         if (abs(meanSPV)>abs(meanSPVPre) && ((NystSign==2  || NystSign==3)))...
                 && Local.SPVDeltaH(idx-1)<Local.NystBeatDeltaMax  && abs(Local.meanSPVH(idx-1))>Local.minSPV...
-                && Local.dTime(Local.startSPVH_S(idx))<endRotTime && abs(Local.meanSPVH(idx-1))>Local.dSaccSPVsep
+                && Local.dTime(Local.startSPVH_S(idx))<Local.endRotationTime && abs(Local.meanSPVH(idx-1))>Local.dSaccSPVsep
             Local.NystSignH(idx-1)=false;
 %             Local.NystSignH(idx-1)=true;
             % eyey gaze to ....
         end
+        
+        if  Local.dTime(Local.stoppSPVH_S(idx))> Local.stopRotationTime+20 && abs(Local.meanSPVH(idx))>Local.minSPV
+            Local.NystSignH(idx)=false;
+        end
+        if  Local.dTime(Local.stoppSPVH_S(idx))> Local.startRotationTime+20 && abs(Local.meanSPVH(idx))>Local.minSPV
+            Local.NystSignH(idx)=false;
+        end
+        
         if abs(Local.meanSPVH(idx))>Local.dSaccSPVsep
             Local.NystSignH(idx)=false;
         end

@@ -27,7 +27,8 @@ function [ err ] = plotSPVH_Time_Graph(Plot)
     [~,endIdx] = size(Plot.meanSPVH);
     cc=1;
     for jj = 2:endIdx-1       
-        if Plot.NystSignH(jj)==true && abs(Plot.meanSPVH(jj))>Plot.minSPV
+%         if Plot.NystSignH(jj)==true && abs(Plot.meanSPVH(jj))>Plot.minSPV
+        if abs(Plot.meanSPVH(jj))>Plot.minSPV
             if abs(Plot.SPVDeltaH(jj))<Plot.NystBeatDeltaMax
                 if Plot.EyePosDeg(Plot.startSPVH_S(jj),1)> Plot.LRsH
                     plot(Plot.dTime(Plot.startSPVH_S(jj)),Plot.meanSPVH(jj),'ro','linewidth', 1.2,'MarkerSize',7.0); hold on;
@@ -76,7 +77,8 @@ function [ err ] = plotSPVH_Time_Graph(Plot)
     
     for idx = 2:endIdx-1                       % plot the position in deg   
 
-        if Plot.NystSignH(idx)==true % && abs(SPV_Pos(jj,4))>Plot.minSPV 
+%         if Plot.NystSignH(idx)==true % && abs(SPV_Pos(jj,4))>Plot.minSPV 
+        if abs(Plot.meanSPVH(idx))>Plot.minSPV 
             if abs(Plot.SPVDeltaH(idx))<Plot.NystBeatDeltaMax
                 if Plot.EyePosDeg(Plot.startSPVH_S(idx),1)> Plot.LRsH
                     plot(Plot.dTime(Plot.startSPVH_S(idx):Plot.stoppSPVH_S(idx)),Plot.aNystBeatH_S(idx,1:Plot.iNbrPointH(idx)),'r','linewidth', 3.0); 

@@ -53,7 +53,8 @@ function [ outPlot ] = plotSPVH_Time( Plot )
         betaL(1).*exp(-(time-Plot.startRotationTime)./betaL(2));
     plot(ax1,time,dDiff,'c','linewidth', 1.2,'MarkerSize',7.0);
     tx2=text(Plot.startRotationTime+30.0,-40.0,sprintf('Fitted Function Y= YR-YL) '));
-
+    tx2.Color="c";
+    
     Func=@(b,x)(b(1).*exp(-(x-Plot.stopRotationTime)./b(2)));
     time=linspace(Plot.stopRotationTime,Plot.headInertialTime(end),200);
     
