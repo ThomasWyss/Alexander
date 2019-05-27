@@ -27,8 +27,9 @@ function [ err ] = plotSPVV_Time_Graph(Plot)
     [~,endIdx] = size(Plot.meanSPVV);
     cc=1;
     for jj = 2:endIdx-1       
-        if Plot.NystSignV(jj)==true && abs(Plot.meanSPVV(jj))>Plot.minSPV
-            if abs(Plot.SPVDeltaV(jj))<12.0
+%         if Plot.NystSignV(jj)==true && abs(Plot.meanSPVV(jj))>Plot.minSPV
+        if abs(Plot.meanSPVV(jj))>Plot.minSPV
+            if abs(Plot.SPVDeltaV(jj))<Plot.NystBeatDeltaMax
                 if Plot.EyePosDeg(Plot.startSPVV_S(jj),2)> Plot.LRsV
                     plot(Plot.dTime(Plot.startSPVV_S(jj)),Plot.meanSPVV(jj),'ro','linewidth', 1.2,'MarkerSize',7.0); hold on;
                 else
@@ -72,8 +73,9 @@ function [ err ] = plotSPVV_Time_Graph(Plot)
     
     for idx = 2:endIdx-1                       % plot the position in deg   
 
-        if Plot.NystSignV(idx)==true % && abs(SPV_Pos(jj,4))>Plot.minSPV 
-            if abs(Plot.SPVDeltaV(idx))<12.0
+%         if Plot.NystSignV(idx)==true % && abs(SPV_Pos(jj,4))>Plot.minSPV 
+        if abs(Plot.meanSPVV(idx))>Plot.minSPV 
+            if abs(Plot.SPVDeltaV(idx))<Plot.NystBeatDeltaMax
                 if Plot.EyePosDeg(Plot.startSPVV_S(idx),2)> Plot.LRsV
                     plot(ax2, Plot.dTime(Plot.startSPVV_S(idx):Plot.stoppSPVV_S(idx)),Plot.aNystBeatV_S(idx,1:Plot.iNbrPointV(idx)),'r','linewidth', 3.0); 
                 else

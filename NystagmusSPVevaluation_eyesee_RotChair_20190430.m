@@ -401,9 +401,9 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
             Plot=calcSaccNystH(Plot);
 %             Plot=deleteInvalid(Plot);
 
-            plotSPVH_Time_Graph(Plot);
+%             plotSPVH_Time_Graph(Plot);
 %             plotSPVH_Position_Graph(Plot,Out(nn_out)); 
-            Plot=plotSPVH_Time(Plot);
+%             Plot=plotSPVH_Time(Plot);
 %             plotSPVH_TimeConst(Plot);
 %             timeBinning(Plot);
         end
@@ -447,13 +447,13 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
             Plot.OutlierRightV.dTime=[1,2,3,4];
 
             [iTmp,~]=size(Plot.endSPVV_S(:,1));
-            NystSignV=zeros(iTmp,1);
+            NystSignV=ones(iTmp,1);
             Plot.NystSignV=NystSignV;         
             Plot=calcSaccNystV(Plot);
             
             plotSPVV_Time(Plot);
 %             plotSPVV_TimeConst(Plot);
-%             plotSPVV_Time_Graph(Plot);
+            plotSPVV_Time_Graph(Plot);
 %             plotSPVV_Position_Graph(Plot,Out(nn_out));  
 %             VerticalTimeBinning(SPVV_Pos,Plot);
         end
