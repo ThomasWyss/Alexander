@@ -1,99 +1,116 @@
-function [ outPlot ] = plotSPVH_Time( Plot )
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+%-------------------------------------------------------------------------
+%   plotSPV_Time_Graph
+%   Plot Slow Phase Velocity and (horizontal) eye position
+%   
+%   ZeroCrossIndex: Number of samples  divided by number of
+%                   zero crossings. Will be printed in red
+%                   when below 4.0 and green when above 4.0
+%                   (bNyst)
+%   aNystSPVdataH_S:    ,1) mean of velocity points
+%                       ,7) dy/dx
+%
+%   pre selected data concerning outliers
+%   SPV_Pos(:,1)= EyPosDeg
+%   SPV_Pos(:,2)= (rotspeed)
+%   SPV_Pos(:,3)= dTime
+%   SPV_Pos(:,3)= meanSPVH
+%
+%   Date:   06.07.2018 wyt  separate line for each LED position
+%-------------------------------------------------------------------------
+function [ err ] = plotSPVH_Time_Graph(Plot)
     
-    figure('Name',['SPVH_Fit ', Plot.Text.szFileName(1:end-4)],'Position',[1, 1, 1920,1080]); % Fig 4
-    ax1=subplot(1,1,1);
-    hold on;
-    Local.PreRotHR.SPV=medfilt1(Plot.PreRotHR.SPV,3);
-    Local.PreRotHL.SPV=medfilt1(Plot.PreRotHL.SPV,3);
-    Local.PostRotHR.SPV=medfilt1(Plot.PostRotHR.SPV,3);
-    Local.PostRotHL.SPV=medfilt1(Plot.PostRotHL.SPV,3);
-    Local.PostRotHR.SPV=medfilt1(Plot.PostRotHR.SPV,3);
-    Local.PostRotHL.SPV=medfilt1(Plot.PostRotHL.SPV,3);
-
-    line(get(gca,'xlim'),[0,0],'Color',[0.0 0.0 0.0],'LineWidth',1.5);
-    plot(ax1, Plot.headInertialTime,Plot.HeadMovVect/10,'color',[0.5 0.5 0.5],'linewidth', 1.2,'MarkerSize',7.0);   
-    ylim([-70, 70]);
-    grid on;
-
-    tx1=text(Plot.startRotationTime-12,15.0,[ sprintf('Start %2.1f',Plot.startRotationTime), '\rightarrow ']);
-    tx1.Color='r';
-    tx1=text(Plot.stopRotationTime,15.0,['\leftarrow ', sprintf('Stopp %2.1f',Plot.stopRotationTime)]);
-    tx1.Color='r';
-    tx1=text(Plot.endRotationTime,15.0,['\leftarrow ', sprintf('End Data %2.1f',Plot.endRotationTime)]);
-    tx1.Color='r';
-
-    plot(ax1,Plot.PreRotHR.dTime,Local.PreRotHR.SPV,'ro','linewidth', 1.2,'MarkerSize',7.0);
-    plot(ax1,Plot.PreRotHL.dTime,Local.PreRotHL.SPV,'bo','linewidth', 1.2,'MarkerSize',7.0);
-    plot(ax1,Plot.PostRotHR.dTime,Local.PostRotHR.SPV,'ro','linewidth', 1.2,'MarkerSize',7.0);
-    plot(ax1,Plot.PostRotHL.dTime,Local.PostRotHL.SPV,'bo','linewidth', 1.2,'MarkerSize',7.0);
-
-    Func=@(b,x)(-b(1).*exp(-(x-Plot.startRotationTime)./b(2)));
-    time=linspace(Plot.startRotationTime,Plot.endRotationTime,200);
+%     clear meanPartSPV;
     
-    % --- PreRotatoric Right Horizontal ---
-    beta0 = [50 10]; % Anfangswerte für die Suche
-    betaR = nlinfit(Plot.PreRotHR.dTime,Local.PreRotHR.SPV,Func,beta0); % Parameter schätzen    
-    plot(ax1,time,-betaR(1).*exp(-(time-Plot.startRotationTime)./betaR(2)),'r','linewidth', 1.2,'MarkerSize',7.0);
-    tx1=text(Plot.startRotationTime+30.0,-30.0,sprintf('Fitted Function YR= -%2.1f * exp( -T/%2.1f) ',betaR(1),betaR(2)));
-    tx1.Color=[1.0 0 0];
-    Plot.PreRotHR.betaR=betaR;
+    figure('Name',['SPVH_Time_Graph ',Plot.Text.szFileName(1:end-4)],'Position',[1, 1, 1920,1080]); % Fig 4
+    ax1=subplot(2,1,1);
     
-    % --- PreRotatoric Left Horizontal ---
-    beta0 = [50 10]; % Anfangswerte für die Suche
-    betaL = nlinfit(Plot.PreRotHL.dTime,Local.PreRotHL.SPV,Func,beta0); % Parameter schätzen    
-    plot(ax1,time,-betaL(1).*exp(-(time-Plot.startRotationTime)./betaL(2)),'b','linewidth', 1.2,'MarkerSize',7.0);
-    tx2=text(Plot.startRotationTime+30.0,-35.0,sprintf('Fitted Function Y= -%2.1f * exp( -t/%2.1f) ',betaL(1),betaL(2)));
-    tx2.Color=[0 0 1.0];
-    Plot.PreRotHL.betaL=betaL;
-              
-    % --- difference R L ---
-    dDiff=-betaR(1).*exp(-(time-Plot.startRotationTime)./betaR(2))+...
-        betaL(1).*exp(-(time-Plot.startRotationTime)./betaL(2));
-    plot(ax1,time,dDiff,'c','linewidth', 1.2,'MarkerSize',7.0);
-    tx2=text(Plot.startRotationTime+30.0,-40.0,sprintf('Fitted Function Y= YR-YL) '));
-    tx2.Color="c";
+    [~,endIdx] = size(Plot.meanSPVH);
+    cc=1;
+    for jj = 2:endIdx-1       
+%         if Plot.NystSignH(jj)==true && abs(Plot.meanSPVH(jj))>Plot.minSPV
+        if abs(Plot.meanSPVH(jj))>Plot.minSPV
+            if abs(Plot.SPVDeltaH(jj))<Plot.NystBeatDeltaMax
+                if Plot.EyePosDeg(Plot.startSPVH_S(jj),1)> Plot.LRsH
+                    plot(Plot.dTime(Plot.startSPVH_S(jj)),Plot.meanSPVH(jj),'ro','linewidth', 1.2,'MarkerSize',7.0); hold on;
+                else
+                    plot(Plot.dTime(Plot.startSPVH_S(jj)),Plot.meanSPVH(jj),'bo','linewidth', 1.2,'MarkerSize',7.0); hold on;
+                end
+                
+            else
+                plot(Plot.dTime(Plot.startSPVH_S(jj)),Plot.meanSPVH(jj),'co','linewidth', 1.2,'MarkerSize',7.0); hold on;                   
+            end                
+        
+           pp(cc,1) = Plot.dTime(Plot.startSPVH_S(jj));
+           pp(cc,2) = Plot.meanSPVH(jj);
+           cc=cc+1;
+        end
+        if Plot.NystSignH(jj)==false && abs(Plot.meanSPVH(jj))>Plot.minSPV          
+%            plot(Plot.dTime(Plot.startSPVH_S(jj)),meanSPV,'ro','linewidth', 1.2,'MarkerSize',7.0); hold on; 
+        end
+    end
     
-    Func=@(b,x)(b(1).*exp(-(x-Plot.stopRotationTime)./b(2)));
-    time=linspace(Plot.stopRotationTime,Plot.headInertialTime(end),200);
-    
-    % --- PostRotatoric Right Horizontal ---
-    beta0 = [50 10]; % Anfangswerte für die Suche
-    betaR = nlinfit(Plot.PostRotHR.dTime,Local.PostRotHR.SPV,Func,beta0); % Parameter schätzen    
-    plot(ax1,time,betaR(1).*exp(-(time-Plot.stopRotationTime)./betaR(2)),'r','linewidth', 1.2,'MarkerSize',7.0);
-    tx1=text(Plot.stopRotationTime+30.0,50.0,sprintf('Fitted Function YR= %2.1f * exp( -t/%2.1f) ',betaR(1),betaR(2)));
-    tx1.Color=[1.0 0 0];
-    Plot.PostRotHR.betaR=betaR;
-    
-    % --- PostRotatoric Left Horizontal ---
-    beta0 = [50 10]; % Anfangswerte für die Suche
-    betaL = nlinfit(Plot.PostRotHL.dTime,Local.PostRotHL.SPV,Func,beta0); % Parameter schätzen    
-    plot(ax1,time,betaL(1).*exp(-(time-Plot.stopRotationTime)./betaL(2)),'b','linewidth', 1.2,'MarkerSize',7.0);
-    tx2=text(Plot.stopRotationTime+30.0,45.0,sprintf('Fitted Function YL= %2.1f * exp( -t/%2.1f) ',betaL(1),betaL(2)));
-    tx2.Color=[0 0 1.0];
-    Plot.PostRotHL.betaL=betaL;
-    
-    % --- difference R L ---
-    dDiff=betaR(1).*exp(-(time-Plot.stopRotationTime)./betaR(2))-...
-          betaL(1).*exp(-(time-Plot.stopRotationTime)./betaL(2));
-    plot(ax1,time,dDiff,'c','linewidth', 1.2,'MarkerSize',7.0);
-    tx2=text(Plot.stopRotationTime+30.0,40.0,sprintf('Fitted Function Y= YR-YL) '));
-    tx2.Color='C';
-    
-    title(['SPVH Exponential Fit ', Plot.Text.szFileName(1:end-4)]);
-    ylabel('SPV [\circ/s]');
-    xlabel('Time');
-    legend('Right SPV H','Left SPV H');
+    plot(ax1, Plot.headInertialTime,Plot.HeadMovVect,'r','linewidth', 1.2,'MarkerSize',7.0);
 %     xlim([108.8 110.4]);
-    ylim([-70, 70]);
+    ylim([-230 230]);
+    title(['SPVH at Time ',Plot.Text.szFileName(1:end-4)]);
+    xlabel('Time [s]');
+    ylabel('SPV [\circ/s]');
+
+    line([0,0],get(gca,'ylim'),'Color',[0.0 0.0 0.0],'LineWidth',1.5);hold on
+    line(get(gca,'xlim'),[0,0],'Color',[0.0 0.0 0.0],'LineWidth',1.5);
     grid on;
-    % --- save into picture and figure ---
-    szSaveName =['..\Data\Pictures\',Plot.Text.szFileName(1:end-4),'_SPVH_TimeFit.jpg'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
-    saveas(gcf,szSaveName);
-    szSaveName =['..\Data\Figures\',Plot.Text.szFileName(1:end-4),'_SPVH_TimeFit.fig'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
-    saveas(gcf,szSaveName);
+    
+    % ---------------------------------------------------------------------
+    % Horizontal: Plot all points (dot blue)
+    %             Plot zero crossings (diamond red)
+    %             Plot start of nyst beat (circle black)
+    %             Plot end of nyst beat (X black)
+    % ---------------------------------------------------------------------
+    ax2 = subplot(2,1,2);   
+    hold on;
+    plot(Plot.dTime,Plot.EyePosDeg(:,1),'k.' )
+    plot(Plot.dTime(1:end-1),Plot.SPVRaw(:,1)/20,'.' )
+    plot(Plot.dTime(1:end-2),Plot.AccelrationRaw(:,1)/20,'.' )
+    plot(Plot.dTime(Plot.idxZeroCrossH_S),Plot.EyePosDeg(Plot.idxZeroCrossH_S,1),'rd'); % zero crossings!!
+    plot(Plot.dTime(Plot.startSPVH_S),Plot.EyePosDeg(Plot.startSPVH_S,1),'ko','linewidth', 1.2,'MarkerSize',10.0);   % start of nystagmus beat
+    plot(Plot.dTime(Plot.stoppSPVH_S),Plot.EyePosDeg(Plot.stoppSPVH_S,1),'kx','linewidth', 1.2,'MarkerSize',10.0);   % start of nystagmus beat
+    
+    for idx = 2:endIdx-1                       % plot the position in deg   
 
-	outPlot=Plot;
+%         if Plot.NystSignH(idx)==true % && abs(SPV_Pos(jj,4))>Plot.minSPV 
+        if abs(Plot.meanSPVH(idx))>Plot.minSPV 
+            if abs(Plot.SPVDeltaH(idx))<Plot.NystBeatDeltaMax
+                if Plot.EyePosDeg(Plot.startSPVH_S(idx),1)> Plot.LRsH
+                    plot(Plot.dTime(Plot.startSPVH_S(idx):Plot.stoppSPVH_S(idx)),Plot.aNystBeatH_S(idx,1:Plot.iNbrPointH(idx)),'r','linewidth', 3.0); 
+                else
+                    plot(Plot.dTime(Plot.startSPVH_S(idx):Plot.stoppSPVH_S(idx)),Plot.aNystBeatH_S(idx,1:Plot.iNbrPointH(idx)),'b','linewidth', 3.0); 
+                end
+            else
+                plot(ax2, Plot.dTime(Plot.startSPVH_S(idx):Plot.stoppSPVH_S(idx)),Plot.aNystBeatH_S(idx,1:Plot.iNbrPointH(idx)),'c','linewidth', 3.0); 
+            end
+        end
+        if Plot.NystSignH(idx)==false && abs(Plot.meanSPVH(idx))>Plot.minSPV     %Saccades
+%             plot(Plot.dTime(Plot.startSPVH_S(idx):Plot.stoppSPVH_S(idx)),Plot.aNystBeatH_S(idx,1:iNbrPoint),'r','linewidth', 3.0); 
+        end
+            
+        szMeanSPVH=sprintf('%3.1f  %3.1fms' ,Plot.meanSPVH(idx),Plot.dTimeDeltaH(idx)*1e3);       % text of mean SPV of each nystagmus beat
+%         szMeanSPVH=sprintf('%3.1f  %3.1fms  %d %d' ,meanSPV,dTimeDiff*1e3,Plot.startSPVH_S(idx),Plot.stoppSPVH_S(idx));       % text of mean SPV of each nystagmus beat
+        h1=text(Plot.dTime(Plot.startSPVH_S(idx)),1.1*Plot.EyePosDeg(Plot.startSPVH_S(idx),1),szMeanSPVH);
+        set (h1, 'Clipping', 'on');     
+    end
+    
+    grid on;
+    title(['Horizontal Position ', Plot.Text.szFileName(1:end-4)]);
+    ylabel('Pos [\circ]');
+    xlabel('Time [s]');
+    ylim([-100 100]);
+%     xlim([108.8 110.4]);
+    linkaxes([ax1, ax2], 'x');
+
+    szSaveName =['..\Data\Pictures\',Plot.Text.szFileName(1:end-4),'_SPVH_Time.jpg'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
+    saveas(gcf,szSaveName);
+    szSaveName =['..\Data\Figures\',Plot.Text.szFileName(1:end-4),'_SPVH_Time.fig'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
+    saveas(gcf,szSaveName);
+    
+     return    
 end
-
