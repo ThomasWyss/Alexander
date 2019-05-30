@@ -15,19 +15,19 @@
 %   SPV_Pos(:,3)= dTime
 %
 %-------------------------------------------------------------------------
-function [ err ] = plotSPVH_Position_Graph(Plot,Out)
+function [ err ] = plotSPVH_Position(Plot,Out)
 
     clear meanPartSPV;
     
-    figure('Name',['SPVH_Position ', Plot.Text.szFileName(1:end-4)],'Position',[1, 1, 1920,1080]); % Fig 4
+    figure('Name',['SPVH_Position ', Plot.Text.szPatient,' ',Plot.Text.szTest],'Position',[1, 1, 1920,1080]); % Fig 4
     x=linspace(-40,40,100);
     subplot(2,1,1);
 
     cc=1;
     [~,endIdx]=size(Plot.meanSPVH);
     for jj = 1:endIdx-1
-        if Plot.NystSignH(jj)==true && abs(Plot.meanSPVH(jj))>Plot.minSPV...
-                && Plot.dTime(Plot.startSPVH_S(jj))<Plot.stopRotationTime
+        if (Plot.NystSignH(jj)) %==true && abs(Plot.meanSPVH(jj))>Plot.minSPV...
+                %&& Plot.dTime(Plot.startSPVH_S(jj))<Plot.stopRotationTime
 
              if abs(Plot.SPVDeltaH(jj))<Plot.NystBeatDeltaMax
                 if Plot.EyePosDeg(Plot.startSPVH_S(jj),1)>Plot.LRsH
@@ -50,7 +50,7 @@ function [ err ] = plotSPVH_Position_Graph(Plot,Out)
     pm=polyfit(pp(:,1),pp(:,2),1);
     plot(x,pm(1)*x+pm(2),'g','linewidth', 1.2); hold on;
     
-    title(['SPVH at Position ', Plot.Text.szFileName(1:end-4)]);
+    title(['SPVH at Position ', Plot.Text.szPatient,' ',Plot.Text.szTest]);
     xlabel('Horizontal Position [\circ]');
     ylabel('SPV [\circ/s]');
     xlim([-40,40]);
@@ -63,13 +63,12 @@ function [ err ] = plotSPVH_Position_Graph(Plot,Out)
     tx1.Color=[1.0 0 0];
     tx2.Color='m';
     tx3.Color=[0 0 1.0];
-%     text(-35.0,-0.9*Plot.dOutlierBoundary,sprintf('mean SPV = %2.1f',Plot.aNystSPVdataH_Smean(:,1)));    
-    
+%     text(-35.0,-0.9*Plot.dOutlierBoundary,sprintf('mean SPV = %2.1f',Plot.aNystSPVdataH_Smean(:,1)));        
 %     tx=text(-35.0,-0.8*Plot.dOutlierBoundary,sprintf('ZeroCrossIdx %2.1f',size(Plot.EyePosDeg)/size(Plot.idxZeroCrossH)));
-    tx.Color=[0 1.0 0];
-    if ~Out.Nystagmus
-        tx.Color=[1.0 0 0];     
-    end
+%     tx.Color=[0 1.0 0];
+%     if ~Out.Nystagmus
+%         tx.Color=[1.0 0 0];     
+%     end
     grid on;
     
   
@@ -106,14 +105,14 @@ function [ err ] = plotSPVH_Position_Graph(Plot,Out)
     end
     
     grid on;
-    title(['Horizontal Position ', Plot.Text.szFileName(1:end-4)]);
+    title(['Horizontal Position ', Plot.Text.szPatient,' ',Plot.Text.szTest]);
     ylabel('Position [\circ]');
     legend('Eye Pos. H','Zero Crossing H','Begin H','End H','Nystagmus Beat H,','ABC');
     ylim([-50,40]);
 
-    szSaveName =['..\..\Data\Pictures\',Plot.Text.szFileName(1:end-4),'_SPVH_Pos.jpg'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
+    szSaveName =['..\Data\Pictures\',Plot.Text.szFileName(1:end-4),'_SPVH_Pos.jpg'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
     saveas(gcf,szSaveName);
-    szSaveName =['..\..\Data\Figures\',Plot.Text.szFileName(1:end-4),'_SPVH_Pos.fig'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
+    szSaveName =['..\Data\Figures\',Plot.Text.szFileName(1:end-4),'_SPVH_Pos.fig'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
     saveas(gcf,szSaveName);
 
     return

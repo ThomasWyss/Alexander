@@ -41,6 +41,5 @@ function [ outPlot ] = calcSaccNystV(Plot)
     Plot.PostRotVL=PostRotL;
     Plot.PostRotVR=PostRotR;
 
-    outPlot=Plot;     
-        
+    outPlot=Plot;             
 end

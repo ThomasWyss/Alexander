@@ -17,25 +17,24 @@
 %
 %   Date:   06.07.2018 wyt  separate line for each LED position
 %-------------------------------------------------------------------------
-function [ err ] = plotSPVH_Time_Graph(Plot)
+function [ err ] = plotSPVH_Time(Plot)
     
 %     clear meanPartSPV;
     
-    figure('Name',['SPVH_Time_Graph ',Plot.Text.szFileName(1:end-4)],'Position',[1, 1, 1920,1080]); % Fig 4
+    figure('Name',['SPVH_Time_Graph ', Plot.Text.szPatient,' ',Plot.Text.szTest],'Position',[1, 1, 1920,1080]); % Fig 4
     ax1=subplot(2,1,1);
     
     [~,endIdx] = size(Plot.meanSPVH);
     cc=1;
     for jj = 2:endIdx-1       
-%         if Plot.NystSignH(jj)==true && abs(Plot.meanSPVH(jj))>Plot.minSPV
+
         if abs(Plot.meanSPVH(jj))>Plot.minSPV
             if abs(Plot.SPVDeltaH(jj))<Plot.NystBeatDeltaMax
                 if Plot.EyePosDeg(Plot.startSPVH_S(jj),1)> Plot.LRsH
                     plot(Plot.dTime(Plot.startSPVH_S(jj)),Plot.meanSPVH(jj),'ro','linewidth', 1.2,'MarkerSize',7.0); hold on;
                 else
                     plot(Plot.dTime(Plot.startSPVH_S(jj)),Plot.meanSPVH(jj),'bo','linewidth', 1.2,'MarkerSize',7.0); hold on;
-                end
-                
+                end               
             else
                 plot(Plot.dTime(Plot.startSPVH_S(jj)),Plot.meanSPVH(jj),'co','linewidth', 1.2,'MarkerSize',7.0); hold on;                   
             end                
@@ -52,7 +51,7 @@ function [ err ] = plotSPVH_Time_Graph(Plot)
     plot(ax1, Plot.headInertialTime,Plot.HeadMovVect,'r','linewidth', 1.2,'MarkerSize',7.0);
 %     xlim([108.8 110.4]);
     ylim([-230 230]);
-    title(['SPVH at Time ',Plot.Text.szFileName(1:end-4)]);
+    title(['SPVH at Time ', Plot.Text.szPatient,' ',Plot.Text.szTest]);
     xlabel('Time [s]');
     ylabel('SPV [\circ/s]');
 
@@ -77,13 +76,12 @@ function [ err ] = plotSPVH_Time_Graph(Plot)
     
     for idx = 2:endIdx-1                       % plot the position in deg   
 
-%         if Plot.NystSignH(idx)==true % && abs(SPV_Pos(jj,4))>Plot.minSPV 
         if abs(Plot.meanSPVH(idx))>Plot.minSPV 
             if abs(Plot.SPVDeltaH(idx))<Plot.NystBeatDeltaMax
                 if Plot.EyePosDeg(Plot.startSPVH_S(idx),1)> Plot.LRsH
                     plot(Plot.dTime(Plot.startSPVH_S(idx):Plot.stoppSPVH_S(idx)),Plot.aNystBeatH_S(idx,1:Plot.iNbrPointH(idx)),'r','linewidth', 3.0); 
                 else
-                    plot(Plot.dTime(Plot.startSPVH_S(idx):Plot.stoppSPVH_S(idx)),Plot.aNystBeatH_S(idx,1:Plot.iNbrPointH(idx)),'b','linewidth', 3.0); 
+                    plot(ax2,Plot.dTime(Plot.startSPVH_S(idx):Plot.stoppSPVH_S(idx)),Plot.aNystBeatH_S(idx,1:Plot.iNbrPointH(idx)),'b','linewidth', 3.0); 
                 end
             else
                 plot(ax2, Plot.dTime(Plot.startSPVH_S(idx):Plot.stoppSPVH_S(idx)),Plot.aNystBeatH_S(idx,1:Plot.iNbrPointH(idx)),'c','linewidth', 3.0); 
@@ -100,7 +98,7 @@ function [ err ] = plotSPVH_Time_Graph(Plot)
     end
     
     grid on;
-    title(['Horizontal Position ', Plot.Text.szFileName(1:end-4)]);
+    title(['Horizontal Position ', Plot.Text.szPatient,' ',Plot.Text.szTest]);
     ylabel('Pos [\circ]');
     xlabel('Time [s]');
     ylim([-100 100]);

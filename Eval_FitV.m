@@ -7,7 +7,7 @@ function [outPlot, outPlotL, outPlotR ] = Eval_FitV( Local, idxStart, idxStop, p
     for ii=1:idxStart-1
          Local.NystSignV(ii)=false;
     end
-           
+    % --- determine up down direction of V nystagmus       
     if Local.HeadMovVect(5000)>180
         rotDir=1;
     else
@@ -15,6 +15,7 @@ function [outPlot, outPlotL, outPlotR ] = Eval_FitV( Local, idxStart, idxStop, p
     end        
 
     for idx = idxStart:2:idxStop-1                                       % plot the position in deg   
+
         NystSign=0;
         % --- determine factors to calculate a meanSPV
         dTimeDiff=      Local.dTime(Local.stoppSPVV_S(idx))-Local.dTime(Local.startSPVV_S(idx));
@@ -132,6 +133,6 @@ function [outPlot, outPlotL, outPlotR ] = Eval_FitV( Local, idxStart, idxStop, p
     end
    
     outPlot=Local;
-    outPlotL=Local.LeftV;
-    outPlotR=Local.RightV;
+    outPlotL=LeftV;
+    outPlotR=RightV;
 end

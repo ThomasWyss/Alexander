@@ -38,8 +38,8 @@ startShiftV=1;
 stopShiftH=-1;
 stopShiftV=-1;
 
-dSaccSPVsep=50.0;
-LRsV = -20.0;
+dSaccSPVsep=50.0;   % higher value means saccade
+LRsV = -10.0;
 LRsH = 5.0;
 NystBeatDeltaMax=18.0;
 
@@ -101,6 +101,10 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
     StrPosStrt=StrPos;
     StrPos=strfind(szFileName,'e');
     szSession=szFileName(StrPosStrt:StrPos-1);
+    
+    StrPosStrt=strfind(szFileName(1:end-4),'t');
+    StrPos=strfind(szFileName,'.');
+    szTest=szFileName(StrPosStrt:StrPos-1);
 
     f1=load([szPathName, szFileName]);
 
@@ -348,6 +352,7 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
         Plot.iSignals=iSignals;
         Plot.Text.szFileName=szFileName;
         Plot.Text.szPatient=szPatient;
+        Plot.Text.szTest=szTest;
         Plot.HeadMovVect=HeadMovVect;
         Plot.headInertialTime=headInertialTime;
         Plot.dSaccSPVsep=dSaccSPVsep;
@@ -401,9 +406,9 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
             Plot=calcSaccNystH(Plot);
 %             Plot=deleteInvalid(Plot);
 
-%             plotSPVH_Time_Graph(Plot);
-%             plotSPVH_Position_Graph(Plot,Out(nn_out)); 
-%             Plot=plotSPVH_Time(Plot);
+            plotSPVH_Time(Plot);
+            plotSPVH_Position(Plot,Out(nn_out)); 
+            Plot=plotSPVH_ExpFitTime(Plot);
 %             plotSPVH_TimeConst(Plot);
 %             timeBinning(Plot);
         end
@@ -452,11 +457,11 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
             Plot=calcSaccNystV(Plot);
             
             plotSPVV_Time(Plot);
-%             plotSPVV_TimeConst(Plot);
             plotSPVV_Time_Graph(Plot);
-%             plotSPVV_Position_Graph(Plot,Out(nn_out));  
+            plotSPVV_Position_Graph(Plot,Out(nn_out));  
 %             VerticalTimeBinning(SPVV_Pos,Plot);
-        end
+ %             plotSPVV_TimeConst(Plot);
+       end
         
         nn_out=nn_out+1;
         close all;

@@ -30,7 +30,7 @@ function [ err ] = plotSPVV_Time_Graph(Plot)
 %         if Plot.NystSignV(jj)==true && abs(Plot.meanSPVV(jj))>Plot.minSPV
         if abs(Plot.meanSPVV(jj))>Plot.minSPV
             if abs(Plot.SPVDeltaV(jj))<Plot.NystBeatDeltaMax
-                if Plot.EyePosDeg(Plot.startSPVV_S(jj),2)> Plot.LRsV
+                if abs(Plot.EyePosDeg(Plot.startSPVV_S(jj),2))> Plot.LRsV
                     plot(Plot.dTime(Plot.startSPVV_S(jj)),Plot.meanSPVV(jj),'ro','linewidth', 1.2,'MarkerSize',7.0); hold on;
                 else
                     plot(Plot.dTime(Plot.startSPVV_S(jj)),Plot.meanSPVV(jj),'bo','linewidth', 1.2,'MarkerSize',7.0); hold on;

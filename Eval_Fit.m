@@ -35,8 +35,7 @@ function [outPlot, outPlotL, outPlotR ] = Eval_Fit( Local, idxStart, idxStop, pr
                 && Local.SPVDeltaH(idx)<Local.NystBeatDeltaMax && abs(Local.meanSPVH(idx))>Local.minSPV...
                 && Local.dTime(Local.startSPVH_S(idx))<Local.endRotationTime
 %             Local.NystSignH(idx)=true;
-            Local.NystSignH(idx-1)=false;
-            
+            Local.NystSignH(idx-1)=false;            
         end
         
         if (abs(meanSPV)>abs(meanSPVPre) && ((NystSign==2  || NystSign==3)))...

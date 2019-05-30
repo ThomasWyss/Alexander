@@ -1,8 +1,8 @@
-function [ outPlot ] = plotSPVH_Time( Plot )
+function [ outPlot ] = plotSPVH_ExpFit( Plot )
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
     
-    figure('Name',['SPVH_Fit ', Plot.Text.szFileName(1:end-4)],'Position',[1, 1, 1920,1080]); % Fig 4
+    figure('Name',['SPVH_ExpFit ', Plot.Text.szPatient,' ',Plot.Text.szTest],'Position',[1, 1, 1920,1080]); % Fig 4
     ax1=subplot(1,1,1);
     hold on;
     Local.PreRotHR.SPV=medfilt1(Plot.PreRotHR.SPV,3);
@@ -81,7 +81,7 @@ function [ outPlot ] = plotSPVH_Time( Plot )
     tx2=text(Plot.stopRotationTime+30.0,40.0,sprintf('Fitted Function Y= YR-YL) '));
     tx2.Color='C';
     
-    title(['SPVH Exponential Fit ', Plot.Text.szFileName(1:end-4)]);
+    title(['SPVH Exponential Fit ', Plot.Text.szPatient,' ',Plot.Text.szTest]);
     ylabel('SPV [\circ/s]');
     xlabel('Time');
     legend('Right SPV H','Left SPV H');
@@ -89,9 +89,9 @@ function [ outPlot ] = plotSPVH_Time( Plot )
     ylim([-70, 70]);
     grid on;
     % --- save into picture and figure ---
-    szSaveName =['..\Data\Pictures\',Plot.Text.szFileName(1:end-4),'_SPVH_TimeFit.jpg'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
+    szSaveName =['..\Data\Pictures\',Plot.Text.szPatient,'_',Plot.Text.szTest,'_SPVH_TimeFit.jpg'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
     saveas(gcf,szSaveName);
-    szSaveName =['..\Data\Figures\',Plot.Text.szFileName(1:end-4),'_SPVH_TimeFit.fig'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
+    szSaveName =['..\Data\Figures\',Plot.Text.szPatient,'_',Plot.Text.szTest,'_SPVH_TimeFit.fig'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
     saveas(gcf,szSaveName);
 
 	outPlot=Plot;

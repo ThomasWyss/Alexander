@@ -28,8 +28,7 @@ function [ outPlot ] = calcSaccNystH(Plot)
     [Plot, PreRotL , PreRotR]= Eval_Fit(Plot, idxStart, idxStop,true);
     [Plot, PostRotL , PostRotR] =Eval_Fit(Plot, idxStop, idxEnd, false);
     Plot.LRsH=mean([PreRotL.Pos,PreRotR.Pos,PostRotL.Pos,PostRotR.Pos]);
-%     Plot.LRsH=mean([PreRotL.Pos',PreRotR.Pos']);
-%     clear PreRotL PreRotR;
+    
     [iTmp,~]=size(Plot.endSPVH_S(:,1));
     NystSignH=ones(iTmp,1);
     Plot.NystSignH=NystSignH;   
@@ -41,6 +40,12 @@ function [ outPlot ] = calcSaccNystH(Plot)
     [Plot, PostRotL , PostRotR] =Eval_Fit(Plot, idxStop, idxEnd, false);
     Plot.PostRotHL=PostRotL;
     Plot.PostRotHR=PostRotR;
-            
+    
+    % --- determine mean position of all pre/post
+    Plot.meanPosHLpre=  mean(PreRotL.Pos);    
+    Plot.meanPosHRpre=  mean(PreRotR.Pos);  
+    Plot.meanPosHLpost=  mean(PostRotL.Pos);    
+    Plot.meanPosHRpost=  mean(PostRotR.Pos);  
+    
     outPlot=Plot;    
 end
