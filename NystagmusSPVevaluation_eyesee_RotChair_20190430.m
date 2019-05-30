@@ -142,12 +142,15 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
         headMov(:,2) = f1.Data(:,HeadIndY);
         headMov(:,3) = f1.Data(:,HeadIndZ);
         HeadMovVect = sqrt(headMov(:,1).^2+headMov(:,2).^2+headMov(:,3).^2);
-        HeadMovVect(1:30)=0;    % at the start there is always huge noise
+        HeadMovVect(1:3000)=0;    % at the start there is always huge noise
         HeadMovVect(30000:end)=0;    % in the end there is always huge noise
         
         HeadMovVectMedian=medfilt1(HeadMovVect,10);
-        HeadMovVectDiff = diff(HeadMovVect)*200;
-        [maxXX,idxStartRotTime]=max(HeadMovVectDiff);
+%         HeadMovVectDiff = diff(HeadMovVect)*200;
+        HeadMovVectDiff = diff(HeadMovVectMedian)*200;
+        [maxXX,idxStartRotTime]=max(HeadMovVectDiff(1:end)); % there is no rotation starting before 15s
+%         idxStartRotTime=idxStartRotTime+3000;
+        
         [minXX,idxEndRotTime]=min(HeadMovVectDiff(idxStartRotTime+200:end));
         idxStartRotTime=idxStartRotTime+130;
         if idxStartRotTime>idxEndRotTime
@@ -406,8 +409,8 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
             Plot=calcSaccNystH(Plot);
 %             Plot=deleteInvalid(Plot);
 
-            plotSPVH_Time(Plot);
-            plotSPVH_Position(Plot,Out(nn_out)); 
+%             plotSPVH_Time(Plot);
+%             plotSPVH_Position(Plot,Out(nn_out)); 
             Plot=plotSPVH_ExpFitTime(Plot);
 %             plotSPVH_TimeConst(Plot);
 %             timeBinning(Plot);
