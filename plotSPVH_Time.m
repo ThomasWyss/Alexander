@@ -21,7 +21,7 @@ function [ err ] = plotSPVH_Time(Plot)
     
 %     clear meanPartSPV;
     
-    figure('Name',['SPVH_Time_Graph ', Plot.Text.szPatient,' ',Plot.Text.szTest],'Position',[1, 1, 1920,1080]); % Fig 4
+    figure('Name',['SPVH_Time ', Plot.Text.szPatient,' ',Plot.Text.szTest],'Position',[1, 1, 1920,1080]); % Fig 4
     ax1=subplot(2,1,1);
     
     [~,endIdx] = size(Plot.meanSPVH);

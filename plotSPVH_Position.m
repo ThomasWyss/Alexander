@@ -37,7 +37,8 @@ function [ err ] = plotSPVH_Position(Plot,Out)
                 end
              else
                 plot(Plot.EyePosDeg(Plot.startSPVH_S(jj)),Plot.meanSPVH(jj),'co','linewidth', 1.2,'MarkerSize',7.0); hold on;                   
-             end                
+             end
+             
              pp(cc,1) = Plot.EyePosDeg(Plot.startSPVH_S(jj));
              pp(cc,2) = Plot.meanSPVH(jj);
              cc=cc+1;
@@ -58,20 +59,12 @@ function [ err ] = plotSPVH_Position(Plot,Out)
     line([0,0],get(gca,'ylim'),'Color',[0.0 0.0 0.0],'LineWidth',1.5);hold on
     line(get(gca,'xlim'),[0,0],'Color',[0.0 0.0 0.0],'LineWidth',1.5);
     tx1=text(-35.0,-10.0,sprintf('Fitted Function Y= %2.1fX + %2.1f all',pm(1),pm(2)));
-%     tx2=text(-35.0,-35.0,sprintf('Fitted Function Y= %2.1fX + %2.1f saccades',pm(1),pm(2)));
-%     tx3=text(-35.0,-60.0,sprintf('Fitted Function Y= %2.1fX + %2.1f nystagmus',pb(1),pb(2)));
+
     tx1.Color=[1.0 0 0];
     tx2.Color='m';
     tx3.Color=[0 0 1.0];
-%     text(-35.0,-0.9*Plot.dOutlierBoundary,sprintf('mean SPV = %2.1f',Plot.aNystSPVdataH_Smean(:,1)));        
-%     tx=text(-35.0,-0.8*Plot.dOutlierBoundary,sprintf('ZeroCrossIdx %2.1f',size(Plot.EyePosDeg)/size(Plot.idxZeroCrossH)));
-%     tx.Color=[0 1.0 0];
-%     if ~Out.Nystagmus
-%         tx.Color=[1.0 0 0];     
-%     end
     grid on;
-    
-  
+      
     subplot(2,1,2);
 
     hold on;
@@ -110,54 +103,10 @@ function [ err ] = plotSPVH_Position(Plot,Out)
     legend('Eye Pos. H','Zero Crossing H','Begin H','End H','Nystagmus Beat H,','ABC');
     ylim([-50,40]);
 
-    szSaveName =['..\Data\Pictures\',Plot.Text.szFileName(1:end-4),'_SPVH_Pos.jpg'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
+    szSaveName =['..\Data\Pictures\',Plot.Text.szPatient,' ',Plot.Text.szTest,'_SPVH_Pos.jpg'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
     saveas(gcf,szSaveName);
-    szSaveName =['..\Data\Figures\',Plot.Text.szFileName(1:end-4),'_SPVH_Pos.fig'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
+    szSaveName =['..\Data\Figures\',Plot.Text.szPatient,' ',Plot.Text.szTest,'_SPVH_Pos.fig'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
     saveas(gcf,szSaveName);
 
     return
-     
-     for idx = 2:2:size(Plot.endSPVH_S)-1                             % plot the position in deg   
-        NystSign(idx)=0;
-        
-        iNbrPoint =     Plot.stoppSPVH_S(idx)-Plot.startSPVH_S(idx)+1;
-        iNbrPointPre =  Plot.stoppSPVH_S(idx-1)-Plot.startSPVH_S(idx-1)+1;
-        dTimeDiff=      Plot.dTime(Plot.stoppSPVH_S(idx))-Plot.dTime(Plot.startSPVH_S(idx));
-        dTimeDiffPre=   Plot.dTime(Plot.stoppSPVH_S(idx-1))-Plot.dTime(Plot.startSPVH_S(idx-1));
-        SPVDiff=        Plot.EyePosDeg(Plot.stoppSPVH_S(idx))-Plot.EyePosDeg(Plot.startSPVH_S(idx));
-        SPVDiffPre=     Plot.EyePosDeg(Plot.stoppSPVH_S(idx-1))-Plot.EyePosDeg(Plot.startSPVH_S(idx-1));
-        meanSPV=SPVDiff/dTimeDiff;
-        meanSPVPre=SPVDiffPre/dTimeDiffPre;
-           
-        if (meanSPVPre>0 && meanSPV>0)NystSign(idx)=1;   end
-        if (meanSPVPre>0 && meanSPV<0)NystSign(idx)=2;   end
-        if (meanSPVPre<0 && meanSPV>0)NystSign(idx)=3;   end
-        if (meanSPVPre<0 && meanSPV<0)NystSign(idx)=4;   end
-
-        if (abs(meanSPV)<abs(meanSPVPre) && ((NystSign(idx)==2  || NystSign(idx)==3)))      
-            plot(Plot.dTime(Plot.startSPVH_S(idx):Plot.stoppSPVH_S(idx)),Plot.aNystBeatH_S(idx,1:iNbrPoint),'g','linewidth', 3.0); 
-            plot(Plot.dTime(Plot.startSPVH_S(idx-1):Plot.stoppSPVH_S(idx-1)),Plot.aNystBeatH_S(idx-1,1:iNbrPointPre),'r','linewidth', 3.0); 
-
-        elseif (abs(meanSPV)>abs(meanSPVPre) && ((NystSign(idx)==2  || NystSign(idx)==3)))
-            plot(Plot.dTime(Plot.startSPVH_S(idx):Plot.stoppSPVH_S(idx)),Plot.aNystBeatH_S(idx,1:iNbrPoint),'r','linewidth', 3.0); 
-            plot(Plot.dTime(Plot.startSPVH_S(idx-1):Plot.stoppSPVH_S(idx-1)),Plot.aNystBeatH_S(idx-1,1:iNbrPointPre),'g','linewidth', 3.0);             
-
-        end
-        szMeanSPVH=sprintf('%3.1f  %3.1fms',meanSPV,dTimeDiff*1e3);       % text of mean SPV of each nystagmus beat
-        szMeanSPVHPre=sprintf('%3.1f  %3.1fms',meanSPVPre,dTimeDiffPre*1e3);       % text of mean SPV of each nystagmus beat
-        h1=text(Plot.dTime(Plot.startSPVH_S(idx)),1.2*Plot.EyePosDeg(Plot.idxZeroCrossH_S(Plot.endSPVH_S(idx)-1)),szMeanSPVH);
-        h2=text(Plot.dTime(Plot.startSPVH_S(idx-1)),1.2*Plot.EyePosDeg(Plot.idxZeroCrossH_S(Plot.endSPVH_S(idx-1)-1)),szMeanSPVHPre);
-        set (h1, 'Clipping', 'on');     
-        set (h2, 'Clipping', 'on');     
-
-     end   
-
-
-%     text(1,-40.0,sprintf('pos mean SPV = %2.2f [deg/s]    %2.1f [deg/s]    ',meanPartSPV(1,1),meanPartSPV(2,1)));    
-%     text(1,-45.0,sprintf('neg mean SPV = %2.2f [deg/s]    %2.1f [deg/s]    ',meanPartSPV(1,2),meanPartSPV(2,2)));    
-    grid on;
-    
-   
-
-err=0;
 end

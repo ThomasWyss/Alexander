@@ -44,6 +44,7 @@ function [ outPlot ] = plotSPVH_ExpFitTime( Plot )
     beta0 = [50 10]; % Anfangswerte für die Suche
     betaR = nlinfit(Plot.PreRotHR.dTime,Local.PreRotHR.SPV,Func,beta0); % Parameter schätzen    
     tx1=text(Plot.startRotationTime+30.0,-30.0,sprintf('Fitted Function YR= %2.1f * exp( -t/%2.1f) ',betaR(1),betaR(2)));
+    tx1.Color=[1.0 0 0];
     plot(ax1,timePre,betaR(1).*exp(-(timePre-Plot.startRotationTime)./betaR(2)),'r','linewidth', 1.2,'MarkerSize',7.0);
     Plot.PreRotHR.betaR=betaR;
     
@@ -52,14 +53,13 @@ function [ outPlot ] = plotSPVH_ExpFitTime( Plot )
     betaL = nlinfit(Plot.PreRotHL.dTime,Local.PreRotHL.SPV,Func,beta0); % Parameter schätzen    
     tx2=text(Plot.startRotationTime+30.0,-40.0,sprintf('Fitted Function YL= %2.1f * exp( -t/%2.1f) ',betaL(1),betaL(2)));
     plot(ax1,timePre,betaL(1).*exp(-(timePre-Plot.startRotationTime)./betaL(2)),'b','linewidth', 1.2,'MarkerSize',7.0);
-    tx1.Color=[1.0 0 0];
     tx2.Color=[0 0 1.0];
     Plot.PreRotHL.betaL=betaL;
               
     % --- difference R L pre rotatoric---
     dDiffPre=betaR(1).*exp(-(timePre-Plot.startRotationTime)./betaR(2))-...
         betaL(1).*exp(-(timePre-Plot.startRotationTime)./betaL(2));
-%     plot(ax1,timePre,dDiffPre,'c','linewidth', 1.2,'MarkerSize',7.0);
+    plot(ax1,timePre,dDiffPre,'c','linewidth', 1.2,'MarkerSize',7.0);
     
     % --- prepare fuction for nonlinear fitting post rotation---
     Func=@(b,x)(b(1).*exp(-(x-Plot.stopRotationTime)./b(2)));
@@ -84,6 +84,7 @@ function [ outPlot ] = plotSPVH_ExpFitTime( Plot )
     % --- difference R L post rotatoric---
     dDiffPost=betaR(1).*exp(-(timePost-Plot.stopRotationTime)./betaR(2))-...
           betaL(1).*exp(-(timePost-Plot.stopRotationTime)./betaL(2));
+    plot(ax1,timePost,dDiffPost,'c','linewidth', 1.2,'MarkerSize',7.0);
     
     ax2=subplot(2,1,2);
     hold on;
@@ -105,9 +106,9 @@ function [ outPlot ] = plotSPVH_ExpFitTime( Plot )
     grid on;
     
     % --- save into picture and figure ---
-    szSaveName =['..\Data\Pictures\',Plot.Text.szPatient,'_',Plot.Text.szTest,'_SPVH_TimeFit.jpg'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
+    szSaveName =['..\Data\Pictures\',Plot.Text.szPatient,'_',Plot.Text.szTest,'_SPVH_ExpTimeFit.jpg'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
     saveas(gcf,szSaveName);
-    szSaveName =['..\Data\Figures\',Plot.Text.szPatient,'_',Plot.Text.szTest,'_SPVH_TimeFit.fig'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
+    szSaveName =['..\Data\Figures\',Plot.Text.szPatient,'_',Plot.Text.szTest,'_SPVH_ExpTimeFit.fig'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
     saveas(gcf,szSaveName);
 
 	outPlot=Plot;

@@ -41,5 +41,11 @@ function [ outPlot ] = calcSaccNystV(Plot)
     Plot.PostRotVL=PostRotL;
     Plot.PostRotVR=PostRotR;
 
+    % --- determine mean position of all pre/post
+    Plot.meanPosVLpre=  mean(PreRotL.Pos);    
+    Plot.meanPosVRpre=  mean(PreRotR.Pos);  
+    Plot.meanPosVLpost=  mean(PostRotL.Pos);    
+    Plot.meanPosVRpost=  mean(PostRotR.Pos);  
+
     outPlot=Plot;             
 end

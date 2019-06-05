@@ -409,11 +409,9 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
             Plot=calcSaccNystH(Plot);
 %             Plot=deleteInvalid(Plot);
 
-%             plotSPVH_Time(Plot);
-%             plotSPVH_Position(Plot,Out(nn_out)); 
+            plotSPVH_Time(Plot);
+            plotSPVH_Position(Plot,Out(nn_out)); 
             Plot=plotSPVH_ExpFitTime(Plot);
-%             plotSPVH_TimeConst(Plot);
-%             timeBinning(Plot);
         end
         
         % --- all vertical data ---
@@ -460,10 +458,8 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
             Plot=calcSaccNystV(Plot);
             
             plotSPVV_Time(Plot);
-            plotSPVV_Time_Graph(Plot);
-            plotSPVV_Position_Graph(Plot,Out(nn_out));  
-%             VerticalTimeBinning(SPVV_Pos,Plot);
- %             plotSPVV_TimeConst(Plot);
+            plotSPVV_ExpFitTime(Plot);
+            plotSPVV_Position(Plot,Out(nn_out));  
        end
         
         nn_out=nn_out+1;
