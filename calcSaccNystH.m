@@ -2,12 +2,12 @@ function [ outPlot ] = calcSaccNystH(Plot)
 
 
     idxStart=1;
-    while Plot.startSPVH_S(idxStart)<Plot.idxStartRotTime
+    while Plot.startSPVH_S(idxStart)<10*Plot.idxStartRotTime   % 10* due to downsample
         idxStart=idxStart+1;
     end
     
     [idxStop, ~] = size(Plot.startSPVH_S);
-    while Plot.startSPVH_S(idxStop)>Plot.idxEndRotTime
+    while Plot.startSPVH_S(idxStop)>10*Plot.idxEndRotTime
         idxStop=idxStop-1;
     end
     [idxEnd,~]=size(Plot.stoppSPVH_S);
@@ -25,19 +25,19 @@ function [ outPlot ] = calcSaccNystH(Plot)
  %-------------------------------------------------------------------------   
     
  %--- Eval_Fit is called twice : workaround to get mean position
-    [Plot, PreRotL , PreRotR]= Eval_Fit(Plot, idxStart, idxStop,true);
-    [Plot, PostRotL , PostRotR] =Eval_Fit(Plot, idxStop, idxEnd, false);
+    [Plot, PreRotL , PreRotR]= Eval_FitH(Plot, idxStart, idxStop,true);
+    [Plot, PostRotL , PostRotR] =Eval_FitH(Plot, idxStop, idxEnd, false);
     Plot.LRsH=mean([PreRotL.Pos,PreRotR.Pos,PostRotL.Pos,PostRotR.Pos]);
     
     [iTmp,~]=size(Plot.endSPVH_S(:,1));
     NystSignH=ones(iTmp,1);
     Plot.NystSignH=NystSignH;   
     
-    [Plot, PreRotL , PreRotR]= Eval_Fit(Plot, idxStart, idxStop, true);
+    [Plot, PreRotL , PreRotR]= Eval_FitH(Plot, idxStart, idxStop, true);
     Plot.PreRotHL=PreRotL;
     Plot.PreRotHR=PreRotR;
     
-    [Plot, PostRotL , PostRotR] =Eval_Fit(Plot, idxStop, idxEnd, false);
+    [Plot, PostRotL , PostRotR] =Eval_FitH(Plot, idxStop, idxEnd, false);
     Plot.PostRotHL=PostRotL;
     Plot.PostRotHR=PostRotR;
     

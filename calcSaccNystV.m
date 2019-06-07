@@ -2,12 +2,12 @@ function [ outPlot ] = calcSaccNystV(Plot)
 
 
     idxStart=1;
-    while Plot.startSPVV_S(idxStart)<Plot.idxStartRotTime
+    while Plot.startSPVV_S(idxStart)<10*Plot.idxStartRotTime
         idxStart=idxStart+1;
     end
     
     [idxStop, ~] = size(Plot.startSPVV_S);
-    while Plot.startSPVV_S(idxStop)>Plot.idxEndRotTime
+    while Plot.startSPVV_S(idxStop)>10*Plot.idxEndRotTime
         idxStop=idxStop-1;
     end
     [idxEnd,~]=size(Plot.stoppSPVV_S);

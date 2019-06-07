@@ -31,25 +31,33 @@ function [outPlot, outPlotL, outPlotR ] = Eval_FitV( Local, idxStart, idxStop, p
         if (meanSPVPre<0 && meanSPV>0) NystSign=3;   end
         if (meanSPVPre<0 && meanSPV<0) NystSign=4;   end
         
+         if pre 
+             startTime=Local.startRotationTime;
+             endTime= Local.stopRotationTime;
+         else
+             startTime=Local.stopRotationTime;
+             endTime= Local.endRotationTime;
+         end
+         
          if (abs(meanSPV)<abs(meanSPVPre) && ((NystSign==2  || NystSign==3)))...
                 && Local.SPVDeltaV(idx)<Local.NystBeatDeltaMax && abs(Local.meanSPVV(idx))<Local.minSPV...
-                && Local.dTime(Local.startSPVV_S(idx))<Local.endRotationTime
+                && Local.dTime(Local.startSPVV_S(idx))<endTime
 
             Local.NystSignV(idx-1)=false;            
-        end
-        
-        if (abs(meanSPV)>abs(meanSPVPre) && ((NystSign==2  || NystSign==3)))...
+         end
+         
+         if (abs(meanSPV)>abs(meanSPVPre) && ((NystSign==2  || NystSign==3)))...
                 && Local.SPVDeltaV(idx-1)<Local.NystBeatDeltaMax  && abs(Local.meanSPVV(idx-1))>Local.minSPV...
-                && Local.dTime(Local.startSPVV_S(idx))<Local.endRotationTime && abs(Local.meanSPVV(idx-1))>Local.dSaccSPVsep
+                && Local.dTime(Local.startSPVV_S(idx))<endTime && abs(Local.meanSPVV(idx-1))>Local.dSaccSPVsep
             Local.NystSignV(idx-1)=false;
 %             Local.NystSignV(idx-1)=true;
             % eyey gaze to ....
         end
         
-        if  Local.dTime(Local.stoppSPVV_S(idx))> Local.stopRotationTime+20 && abs(Local.meanSPVV(idx))>Local.minSPV
+        if  Local.dTime(Local.stoppSPVV_S(idx))> endTime+20 && abs(Local.meanSPVV(idx))>Local.minSPV
             Local.NystSignV(idx)=false;
         end
-        if  Local.dTime(Local.stoppSPVV_S(idx))> Local.startRotationTime+20 && abs(Local.meanSPVV(idx))>Local.minSPV
+        if  Local.dTime(Local.stoppSPVV_S(idx))> startTime+20 && abs(Local.meanSPVV(idx))>Local.minSPV
             Local.NystSignV(idx)=false;
         end
         

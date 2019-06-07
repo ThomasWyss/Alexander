@@ -80,7 +80,8 @@ NystBeatDeltaMax=18.0;
 
 % ##### get names of one data file #####
 
-[file,path] = uigetfile('..\Data\Data_2019_04_16\*e022*.mat');
+% [file,path] = uigetfile('..\Data\Data_2019_04_16\*e022*.mat');
+[file,path] = uigetfile('..\Data\t006\*e022*.mat');
 szFileName=file;
 szPathName=path;
 
@@ -142,23 +143,33 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
         headMov(:,2) = f1.Data(:,HeadIndY);
         headMov(:,3) = f1.Data(:,HeadIndZ);
         HeadMovVect = sqrt(headMov(:,1).^2+headMov(:,2).^2+headMov(:,3).^2);
-        HeadMovVect(1:3000)=0;    % at the start there is always huge noise
+        HeadMovVect(1:400)=0;    % at the start there is always huge noise
         HeadMovVect(30000:end)=0;    % in the end there is always huge noise
-        
         HeadMovVectMedian=medfilt1(HeadMovVect,10);
-%         HeadMovVectDiff = diff(HeadMovVect)*200;
         HeadMovVectDiff = diff(HeadMovVectMedian)*200;
-        [maxXX,idxStartRotTime]=max(HeadMovVectDiff(1:end)); % there is no rotation starting before 15s
-%         idxStartRotTime=idxStartRotTime+3000;
         
-        [minXX,idxEndRotTime]=min(HeadMovVectDiff(idxStartRotTime+200:end));
-        idxStartRotTime=idxStartRotTime+130;
+        headInertialTime = f1.Data(:,HeadTimeIndX);
+%         scaleRot=HeadMovVectDiff./headInertialTime(1:end-1);
+
+%         HeadMovVectDiff = diff(HeadMovVect)*200;
+        
+        % --- downsample to get better diff results ---
+        headInertialTimeDS=downsample(headInertialTime,10);
+        HeadMovVectDS=downsample(HeadMovVect,10);
+%         HeadMovVectDiffDS=downsample(HeadMovVectDiff,10);
+        HeadMovVectDSmed=medfilt1(HeadMovVectDS,10);
+        HeadMovVectDSmedDiff=diff(HeadMovVectDSmed);
+
+        figure('Name',['Auswertung Rotation ', szPatient,' ',szTest],'Position',[1, 1, 1920,1080]); % Fig 4
+        hold on;       
+        plot(headInertialTimeDS(1:end),HeadMovVectDSmed);
+        plot(headInertialTimeDS(1:end-1),HeadMovVectDSmedDiff);
+        
+        [maxXX,idxStartRotTime]=max(HeadMovVectDSmedDiff(1:800)); % there is no rotation starting before 15s        
+        [minXX,idxEndRotTime]=min(HeadMovVectDSmedDiff);
         if idxStartRotTime>idxEndRotTime
            [idxEndRotTime, idxStartRotTime] = deal(idxStartRotTime,idxEndRotTime) 
-        end
-        idxEndRotTime=idxEndRotTime+idxStartRotTime+200;        
-        headInertialTime = f1.Data(:,HeadTimeIndX);
-        scaleRot=HeadMovVectDiff./headInertialTime(1:end-1);
+        end      
         
         %----- calibration --------
         EyePosDeg =  atan(c1.LeftEyeCal *[EyePosPix  ones(size(EyePosPix(:,1))) ]')';
@@ -362,10 +373,6 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
         Plot.idxStartRotTime=idxStartRotTime;
         Plot.idxEndRotTime=idxEndRotTime;
                 
-%         Plot.aOutlierVL=aOutlierVL;
-%         Plot.aOutlierHL=aOutlierHL;
-%         Plot.aOutlierVR=aOutlierVR;
-%         Plot.aOutlierHR=aOutlierHR;
         % --- all horizontal data ---
         if bHDataValid
             Plot.iNbrPointH=iNbrPointH;
@@ -392,22 +399,11 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
             Plot.startSPVH_S=startSPVH_S;
             Plot.stoppSPVH_S=stoppSPVH_S;
             Plot.aNystBeatH_S=aNystBeatH_S;
-
-%             Plot.OutlierLeftH.idx=[1,2,3,4];    % All outliers H Left
-%             Plot.OutlierLeftH.SPV=[1,2,3,4];
-%             Plot.OutlierLeftH.Pos=[1,2,3,4];
-%             Plot.OutlierLeftH.dTime=[1,2,3,4];
-%             Plot.OutlierRightH.idx=[1,2,3,4];   % All outliers H Right
-%             Plot.OutlierRightH.SPV=[1,2,3,4];
-%             Plot.OutlierRightH.Pos=[1,2,3,4];
-%             Plot.OutlierRightH.dTime=[1,2,3,4];
-
             
             [iTmp,~]=size(Plot.endSPVH_S(:,1));
             NystSignH=ones(iTmp,1);
             Plot.NystSignH=NystSignH;                       
             Plot=calcSaccNystH(Plot);
-%             Plot=deleteInvalid(Plot);
 
             plotSPVH_Time(Plot);
             plotSPVH_Position(Plot,Out(nn_out)); 
@@ -442,15 +438,6 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
             Plot.stoppSPVV_S=stoppSPVV_S;
             Plot.aNystBeatV_S=aNystBeatV_S;
             Plot.aNystBeatV=aNystBeatV;
-            
-            Plot.OutlierLeftV.idx=[1,2,3,4];    % All outliers V Left
-            Plot.OutlierLeftV.SPV=[1,2,3,4];
-            Plot.OutlierLeftV.Pos=[1,2,3,4];
-            Plot.OutlierLeftV.dTime=[1,2,3,4];
-            Plot.OutlierRightV.idx=[1,2,3,4];   % All outliers V Right
-            Plot.OutlierRightV.SPV=[1,2,3,4];
-            Plot.OutlierRightV.Pos=[1,2,3,4];
-            Plot.OutlierRightV.dTime=[1,2,3,4];
 
             [iTmp,~]=size(Plot.endSPVV_S(:,1));
             NystSignV=ones(iTmp,1);
