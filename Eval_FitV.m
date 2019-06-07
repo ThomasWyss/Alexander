@@ -5,7 +5,7 @@ function [outPlot, outPlotL, outPlotR ] = Eval_FitV( Local, idxStart, idxStop, p
     clear RightV LeftV;
     % --- reset the NystSignV before start of rotation ---    
     for ii=1:idxStart-1
-         Local.NystSignV(ii)=false;
+         Local.NystSignV(ii)=true;
     end
     % --- determine up down direction of V nystagmus       
     if Local.HeadMovVect(5000)>180
@@ -14,7 +14,15 @@ function [outPlot, outPlotL, outPlotR ] = Eval_FitV( Local, idxStart, idxStop, p
         rotDir=-1;
     end        
 
-    for idx = idxStart:2:idxStop-1                                       % plot the position in deg   
+     if pre 
+         startTime=Local.startRotationTime+0.5;
+         stopTime= Local.stopRotationTime+0.5;
+     else
+         startTime=Local.stopRotationTime+0.5;
+         stopTime= Local.endRotationTime;
+     end
+
+    for idx = idxStart:2:idxStop-1                                       % plot the position in deg
 
         NystSign=0;
         % --- determine factors to calculate a meanSPV
@@ -31,34 +39,40 @@ function [outPlot, outPlotL, outPlotR ] = Eval_FitV( Local, idxStart, idxStop, p
         if (meanSPVPre<0 && meanSPV>0) NystSign=3;   end
         if (meanSPVPre<0 && meanSPV<0) NystSign=4;   end
         
-         if pre 
-             startTime=Local.startRotationTime;
-             endTime= Local.stopRotationTime;
-         else
-             startTime=Local.stopRotationTime;
-             endTime= Local.endRotationTime;
-         end
          
          if (abs(meanSPV)<abs(meanSPVPre) && ((NystSign==2  || NystSign==3)))...
                 && Local.SPVDeltaV(idx)<Local.NystBeatDeltaMax && abs(Local.meanSPVV(idx))<Local.minSPV...
-                && Local.dTime(Local.startSPVV_S(idx))<endTime
+                && Local.dTime(Local.startSPVV_S(idx))<stopTime
 
             Local.NystSignV(idx-1)=false;            
          end
          
          if (abs(meanSPV)>abs(meanSPVPre) && ((NystSign==2  || NystSign==3)))...
                 && Local.SPVDeltaV(idx-1)<Local.NystBeatDeltaMax  && abs(Local.meanSPVV(idx-1))>Local.minSPV...
-                && Local.dTime(Local.startSPVV_S(idx))<endTime && abs(Local.meanSPVV(idx-1))>Local.dSaccSPVsep
+                && Local.dTime(Local.startSPVV_S(idx))<stopTime && abs(Local.meanSPVV(idx-1))>Local.dSaccSPVsep
             Local.NystSignV(idx-1)=false;
 %             Local.NystSignV(idx-1)=true;
             % eyey gaze to ....
+         end        
+        % --- nystagmus fades => outliers are smaller and can be tilted ---                
+        if  (Local.dTime(Local.startSPVV_S(idx))> (startTime+25) && abs(Local.meanSPVV(idx))>Local.minSPV)
+            Local.NystSignV(idx)=false;
+        end
+        if  (Local.dTime(Local.startSPVV_S(idx-1))> (startTime+25) && abs(Local.meanSPVV(idx-1))>Local.minSPV)
+            Local.NystSignV(idx-1)=false;
         end
         
-        if  Local.dTime(Local.stoppSPVV_S(idx))> endTime+20 && abs(Local.meanSPVV(idx))>Local.minSPV
+        if  Local.dTime(Local.startSPVV_S(idx))> stopTime %&& abs(Local.meanSPVH(idx))>Local.minSPV
             Local.NystSignV(idx)=false;
         end
-        if  Local.dTime(Local.stoppSPVV_S(idx))> startTime+20 && abs(Local.meanSPVV(idx))>Local.minSPV
+        if  Local.dTime(Local.startSPVV_S(idx))< startTime %&& abs(Local.meanSPVH(idx))>Local.minSPV
             Local.NystSignV(idx)=false;
+        end
+        if  Local.dTime(Local.startSPVV_S(idx-1))> stopTime %&& abs(Local.meanSPVH(idx))>Local.minSPV
+            Local.NystSignV(idx-1)=false;
+        end
+        if  Local.dTime(Local.startSPVV_S(idx-1))< startTime %&& abs(Local.meanSPVH(idx))>Local.minSPV
+            Local.NystSignV(idx-1)=false;
         end
         
         if abs(Local.meanSPVV(idx))>Local.dSaccSPVsep
@@ -67,20 +81,20 @@ function [outPlot, outPlotL, outPlotR ] = Eval_FitV( Local, idxStart, idxStop, p
         if abs(Local.meanSPVV(idx-1))>Local.dSaccSPVsep
             Local.NystSignV(idx-1)=false;
         end
-        % --- if chair rot right all negative prerot SPV are invalid ---
-        if rotDir==1 && pre && meanSPV<0
+        % --- if chair rot right all pos prerot SPV are invalid ---
+        if rotDir==1 && pre && meanSPV>0
             Local.NystSignV(idx)=false;            
         end
         
-        if rotDir==1 && pre && meanSPVPre<0
+        if rotDir==1 && pre && meanSPVPre>0
             Local.NystSignV(idx-1)=false;
         end
-        % --- if chair rot right all negative prerot SPV are invalid ---
-        if rotDir==1 && ~pre && meanSPV>0
+        % --- if chair rot right all neg postrot SPV are invalid ---
+        if rotDir==1 && ~pre && meanSPV<0
             Local.NystSignV(idx)=false;
         end
         
-        if rotDir==1 && ~pre && meanSPVPre>0
+        if rotDir==1 && ~pre && meanSPVPre<0
             Local.NystSignV(idx-1)=false;
         end
         
@@ -91,7 +105,7 @@ function [outPlot, outPlotL, outPlotR ] = Eval_FitV( Local, idxStart, idxStop, p
         if rotDir==-1 && pre && meanSPVPre<0
             Local.NystSignV(idx-1)=false;
         end
-        % --- if chair rot right all negative prerot SPV are invalid ---
+        % --- if chair rot right all negative postrot SPV are invalid ---
         if rotDir==-1 && ~pre && meanSPV>0
             Local.NystSignV(idx)=false;
         end

@@ -52,7 +52,7 @@ function [ outPlot ] = plotSPVV_ExpFitTime( Plot )
     beta0 = [50 10]; % Anfangswerte für die Suche
     betaL = nlinfit(Plot.PreRotVL.dTime,Plot.PreRotVL.SPV,Func,beta0); % Parameter schätzen    
     plot(ax1,timePre,-betaL(1).*exp(-(timePre-Plot.startRotationTime)./betaL(2)),'b','linewidth', 1.2,'MarkerSize',7.0);
-    tx2=text(Plot.startRotationTime+50.0,-35.0,sprintf('Fitted Function Y= -%2.1fX * exp( -x/%2.1f) ',betaL(1),betaL(2)));
+    tx2=text(Plot.startRotationTime+50.0,-40.0,sprintf('Fitted Function Y= -%2.1fX * exp( -x/%2.1f) ',betaL(1),betaL(2)));
     tx2.Color=[0 0 1.0];
     Plot.PreRotVL.betaL=betaL;
               
@@ -69,7 +69,7 @@ function [ outPlot ] = plotSPVV_ExpFitTime( Plot )
     beta0 = [50 10]; % Anfangswerte für die Suche
     betaR = nlinfit(Plot.PostRotVR.dTime,Plot.PostRotVR.SPV,Func,beta0); % Parameter schätzen    
     plot(ax1,timePost,betaR(1).*exp(-(timePost-Plot.stopRotationTime)./betaR(2)),'r','linewidth', 1.2,'MarkerSize',7.0);
-    tx1=text(Plot.stopRotationTime+50.0,50.0,sprintf('Fitted Function Y= %2.1fX * exp( -x/%2.1f) ',betaR(1),betaR(2)));
+    tx1=text(Plot.stopRotationTime+30.0,50.0,sprintf('Fitted Function Y= %2.1fX * exp( -x/%2.1f) ',betaR(1),betaR(2)));
     tx1.Color=[1.0 0 0];
     Plot.PostRotVR.betaR=betaR;
         
@@ -77,7 +77,7 @@ function [ outPlot ] = plotSPVV_ExpFitTime( Plot )
     beta0 = [50 10]; % Anfangswerte für die Suche
     betaL = nlinfit(Plot.PostRotVL.dTime,Plot.PostRotVL.SPV,Func,beta0); % Parameter schätzen    
     plot(ax1,timePost,betaL(1).*exp(-(timePost-Plot.stopRotationTime)./betaL(2)),'b','linewidth', 1.2,'MarkerSize',7.0);
-    tx2=text(Plot.stopRotationTime+50.0,45.0,sprintf('Fitted Function Y= %2.1fX * exp( -x/%2.1f) ',betaL(1),betaL(2)));
+    tx2=text(Plot.stopRotationTime+30.0,40.0,sprintf('Fitted Function Y= %2.1fX * exp( -x/%2.1f) ',betaL(1),betaL(2)));
     tx2.Color=[0 0 1.0];
     Plot.PostRotVL.betaL=betaL;
                 

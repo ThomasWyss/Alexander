@@ -405,8 +405,8 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
             Plot.NystSignH=NystSignH;                       
             Plot=calcSaccNystH(Plot);
 
-            plotSPVH_Time(Plot);
-            plotSPVH_Position(Plot,Out(nn_out)); 
+%             plotSPVH_Time(Plot);
+%             plotSPVH_Position(Plot,Out(nn_out)); 
             Plot=plotSPVH_ExpFitTime(Plot);
         end
         
@@ -445,8 +445,8 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
             Plot=calcSaccNystV(Plot);
             
             plotSPVV_Time(Plot);
+%             plotSPVV_Position(Plot,Out(nn_out));  
             plotSPVV_ExpFitTime(Plot);
-            plotSPVV_Position(Plot,Out(nn_out));  
        end
         
         nn_out=nn_out+1;
