@@ -1,5 +1,5 @@
 %-------------------------------------------------------------------------
-%   plotSPV_Time_Graph
+%   plotSPV_Time
 %   Plot Slow Phase Velocity and (horizontal) eye position
 %   
 %   ZeroCrossIndex: Number of samples  divided by number of

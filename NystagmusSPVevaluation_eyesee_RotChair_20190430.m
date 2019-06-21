@@ -38,8 +38,8 @@ startShiftV=1;
 stopShiftH=-1;
 stopShiftV=-1;
 
-dSaccSPVsep=50.0;   % higher value means saccade
-LRsV = -10.0;
+dSaccSPVsep=60.0;   % higher value means saccade
+LRsV = -5.0;
 LRsH = 5.0;
 NystBeatDeltaMax=18.0;
 
@@ -444,7 +444,7 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
             Plot.NystSignV=NystSignV;         
             Plot=calcSaccNystV(Plot);
             
-            plotSPVV_Time(Plot);
+%             plotSPVV_Time(Plot);
 %             plotSPVV_Position(Plot,Out(nn_out));  
             plotSPVV_ExpFitTime(Plot);
        end

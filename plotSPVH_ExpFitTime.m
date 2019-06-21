@@ -19,7 +19,7 @@ function [ outPlot ] = plotSPVH_ExpFitTime( Plot )
     % --- chair rotation speed ---
     line(get(gca,'xlim'),[0,0],'Color',[0.0 0.0 0.0],'LineWidth',1.5);
     plot(ax1, Plot.headInertialTime,Plot.HeadMovVect/10,'color',[0.5 0.5 0.5],'linewidth', 1.2,'MarkerSize',7.0);   
-    ylim([-70, 70]);
+    ylim([-80, 80]);
     grid on;
 
     % --- mark the rotation curve (start stop +end of data ---
@@ -61,6 +61,11 @@ function [ outPlot ] = plotSPVH_ExpFitTime( Plot )
         betaL(1).*exp(-(timePre-Plot.startRotationTime)./betaL(2));
     plot(ax1,timePre,dDiffPre,'c','linewidth', 1.2,'MarkerSize',7.0);
     
+    % --- average SPV pre rot ---
+    dAvgPre=(betaR(1).*exp(-(timePre-Plot.startRotationTime)./betaR(2))+...
+          betaL(1).*exp(-(timePre-Plot.startRotationTime)./betaL(2)))/2;
+    plot(ax1,timePre,dAvgPre,'m','linewidth', 1.2,'MarkerSize',7.0);
+
     % --- prepare fuction for nonlinear fitting post rotation---
     Func=@(b,x)(b(1).*exp(-(x-Plot.stopRotationTime)./b(2)));
     timePost=linspace(Plot.stopRotationTime,Plot.headInertialTime(end),200);
@@ -69,7 +74,7 @@ function [ outPlot ] = plotSPVH_ExpFitTime( Plot )
     beta0 = [-50 10]; % Anfangswerte für die Suche
     betaR = nlinfit(Plot.PostRotHR.dTime,Local.PostRotHR.SPV,Func,beta0); % Parameter schätzen    
     plot(ax1,timePost,betaR(1).*exp(-(timePost-Plot.stopRotationTime)./betaR(2)),'r','linewidth', 1.2,'MarkerSize',7.0);
-    tx1=text(Plot.stopRotationTime+30.0,50.0,sprintf('Fitted Function YR= %2.1f * exp( -t/%2.1f) ',betaR(1),betaR(2)));
+    tx1=text(Plot.stopRotationTime+30.0,40.0,sprintf('Fitted Function YR= %2.1f * exp( -t/%2.1f) ',betaR(1),betaR(2)));
     tx1.Color=[1.0 0 0];
     Plot.PostRotHR.betaR=betaR;
     
@@ -77,31 +82,49 @@ function [ outPlot ] = plotSPVH_ExpFitTime( Plot )
     beta0 = [-50 10]; % Anfangswerte für die Suche
     betaL = nlinfit(Plot.PostRotHL.dTime,Local.PostRotHL.SPV,Func,beta0); % Parameter schätzen    
     plot(ax1,timePost,betaL(1).*exp(-(timePost-Plot.stopRotationTime)./betaL(2)),'b','linewidth', 1.2,'MarkerSize',7.0);
-    tx2=text(Plot.stopRotationTime+30.0,40.0,sprintf('Fitted Function YL= %2.1f * exp( -t/%2.1f) ',betaL(1),betaL(2)));
+    tx2=text(Plot.stopRotationTime+30.0,30.0,sprintf('Fitted Function YL= %2.1f * exp( -t/%2.1f) ',betaL(1),betaL(2)));
     tx2.Color=[0 0 1.0];
     Plot.PostRotHL.betaL=betaL;
-
+    
+    % --- average SPV post rot ---
+    dAvgPost=(betaR(1).*exp(-(timePost-Plot.stopRotationTime)./betaR(2))+...
+          betaL(1).*exp(-(timePost-Plot.stopRotationTime)./betaL(2)))/2;
+    plot(ax1,timePost,dAvgPost,'m','linewidth', 1.2,'MarkerSize',7.0);
+    
     % --- difference R L post rotatoric---
     dDiffPost=betaR(1).*exp(-(timePost-Plot.stopRotationTime)./betaR(2))-...
           betaL(1).*exp(-(timePost-Plot.stopRotationTime)./betaL(2));
     plot(ax1,timePost,dDiffPost,'c','linewidth', 1.2,'MarkerSize',7.0);
     
+    tx=text(Plot.stopRotationTime+30.0,50.0,sprintf('Average of R and L gaze         Yavg = (YR + YL)/2 ',betaL(1),betaL(2)));
+    tx.Color='m';
+    tx=text(Plot.stopRotationTime+30.0,60.0,sprintf('Difference between R and L gaze Ydiff = (YR - YL) ',betaL(1),betaL(2)));
+    tx.Color='c';
+    % ---------------------------------------------------------------------
+    % --- SubPlot Bottom ---
+    % ---------------------------------------------------------------------
     ax2=subplot(2,1,2);
     hold on;
+    
     % --- chair rotation speed ---
-%     line(get(gca,'xlim'),[0,0],'Color',[0.0 0.0 0.0],'LineWidth',1.5);
     plot(ax2, Plot.headInertialTime,Plot.HeadMovVect,'color',[0.5 0.5 0.5],'linewidth', 1.2,'MarkerSize',7.0);   
 
+    % --- average SPV pre rot ---
+    plot(ax2,timePre,dAvgPre,'m','linewidth', 1.2,'MarkerSize',7.0);
+
+    % --- average SPV post rot ---
+    plot(ax2,timePost,dAvgPost,'m','linewidth', 1.2,'MarkerSize',7.0);
+
     % --- difference R L ---
-    plot(ax2,timePre,1e3*dDiffPre/(Plot.meanPosHLpre-Plot.meanPosHRpre),'m','linewidth', 2.0,'MarkerSize',7.0);
-    plot(ax2,timePost,1e3*dDiffPost/(Plot.meanPosHLpost-Plot.meanPosHRpost),'m','linewidth', 2.0,'MarkerSize',7.0);
+    plot(ax2,timePre,(Plot.meanPosHLpre-Plot.meanPosHRpre)./dDiffPre,'c','linewidth', 2.0,'MarkerSize',7.0);
+    plot(ax2,timePost,(Plot.meanPosHLpost-Plot.meanPosHRpost)./dDiffPost,'c','linewidth', 2.0,'MarkerSize',7.0);
 
     title(['SPVH TimeConstant Y = (YR-YL) / \DeltaPosition ', Plot.Text.szPatient,' ',Plot.Text.szTest]);
-    ylabel('TimeConstant [ms]');
+    ylabel('TimeConstant [s]');
     xlabel('Time');
-    legend('Rotation Velocity \circ/s','TimeConstant');
+    legend('Rotation Velocity \circ/s','average pre','average post','TimeConst pre','TimeConst post');
 
-    ylim([-200, 1000]);
+    ylim([-100, 2000]);
     linkaxes([ax1, ax2], 'x');
     grid on;
     
