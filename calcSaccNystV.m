@@ -2,12 +2,12 @@ function [ outPlot ] = calcSaccNystV(Plot)
 
 
     idxStart=1;
-    while Plot.startSPVV_S(idxStart)<Plot.idxStartRotTime
+    while Plot.startSPVV_S(idxStart)<10*Plot.idxStartRotTime
         idxStart=idxStart+1;
     end
     
-    [idxStop, ~] = size(Plot.startSPVH_S);
-    while Plot.startSPVV_S(idxStop)>Plot.idxEndRotTime
+    [idxStop, ~] = size(Plot.startSPVV_S);
+    while Plot.startSPVV_S(idxStop)>10*Plot.idxEndRotTime
         idxStop=idxStop-1;
     end
     [idxEnd,~]=size(Plot.stoppSPVV_S);
@@ -27,9 +27,9 @@ function [ outPlot ] = calcSaccNystV(Plot)
  %--- Eval_Fit is called twice : workaround to get mean position
     [Plot, PreRotL , PreRotR]= Eval_FitV(Plot, idxStart, idxStop,true);
     [Plot, PostRotL , PostRotR] =Eval_FitV(Plot, idxStop, idxEnd, false);
-    Plot.LRsH=mean([PreRotL.Pos,PreRotR.Pos,PostRotL.Pos,PostRotR.Pos]);
+    Plot.LRsV=mean([PreRotL.Pos,PreRotR.Pos,PostRotL.Pos,PostRotR.Pos]);
 
-    [iTmp,~]=size(Plot.endSPVH_S(:,1));
+    [iTmp,~]=size(Plot.endSPVV_S(:,1));
     NystSignV=ones(iTmp,1);
     Plot.NystSignV=NystSignV;   
     
@@ -41,6 +41,11 @@ function [ outPlot ] = calcSaccNystV(Plot)
     Plot.PostRotVL=PostRotL;
     Plot.PostRotVR=PostRotR;
 
-    outPlot=Plot;     
-        
+    % --- determine mean position of all pre/post
+    Plot.meanPosVLpre=  mean(PreRotL.Pos);    
+    Plot.meanPosVRpre=  mean(PreRotR.Pos);  
+    Plot.meanPosVLpost=  mean(PostRotL.Pos);    
+    Plot.meanPosVRpost=  mean(PostRotR.Pos);  
+
+    outPlot=Plot;             
 end

@@ -1,11 +1,11 @@
-function [outPlot, outPlotL, outPlotR ] = Eval_Fit( Local, idxStart, idxStop, pre)
+function [outPlot, outPlotL, outPlotR ] = Eval_FitH( Local, idxStart, idxStop, pre)
 
     iDataIdxR=1;
     iDataIdxL=1;
     clear RightH LeftH;
     % --- reset the NystSignH before start of rotation ---    
     for ii=1:idxStart-1
-         Local.NystSignH(ii)=false;
+         Local.NystSignH(ii)=true;
     end
            
     if Local.HeadMovVect(5000)>180
@@ -14,6 +14,14 @@ function [outPlot, outPlotL, outPlotR ] = Eval_Fit( Local, idxStart, idxStop, pr
         rotDir=-1;
     end
 
+     if pre 
+         startTime=Local.startRotationTime+0.5;
+         endTime= Local.stopRotationTime+0.5;
+     else
+         startTime=Local.stopRotationTime+0.5;
+         endTime= Local.endRotationTime;
+     end
+       
     for idx = idxStart:2:idxStop-1                                      
 
         NystSign=0;
@@ -22,7 +30,7 @@ function [outPlot, outPlotL, outPlotR ] = Eval_Fit( Local, idxStart, idxStop, pr
         dTimeDiffPre=   Local.dTime(Local.stoppSPVH_S(idx-1))-Local.dTime(Local.startSPVH_S(idx-1));        
         SPVDiff=        Local.EyePosDeg(Local.stoppSPVH_S(idx),1)-Local.EyePosDeg(Local.startSPVH_S(idx),1);
         SPVDiffPre=     Local.EyePosDeg(Local.stoppSPVH_S(idx-1),1)-Local.EyePosDeg(Local.startSPVH_S(idx-1),1);
-        meanSPV=        SPVDiff/dTimeDiff;
+%         meanSPV=        SPVDiff/dTimeDiff;
         meanSPV=        Local.meanSPVH(idx);
         meanSPVPre=     SPVDiffPre/dTimeDiffPre;
         % --- classify the NystSign ---
@@ -31,27 +39,40 @@ function [outPlot, outPlotL, outPlotR ] = Eval_Fit( Local, idxStart, idxStop, pr
         if (meanSPVPre<0 && meanSPV>0) NystSign=3;   end
         if (meanSPVPre<0 && meanSPV<0) NystSign=4;   end
         
-        if (abs(meanSPV)<abs(meanSPVPre) && ((NystSign==2  || NystSign==3)))...
+         
+         if (abs(meanSPV)<abs(meanSPVPre) && ((NystSign==2  || NystSign==3)))...
                 && Local.SPVDeltaH(idx)<Local.NystBeatDeltaMax && abs(Local.meanSPVH(idx))>Local.minSPV...
-                && Local.dTime(Local.startSPVH_S(idx))<Local.endRotationTime
+                && Local.dTime(Local.startSPVH_S(idx))<endTime
 %             Local.NystSignH(idx)=true;
-            Local.NystSignH(idx-1)=false;
-            
+            Local.NystSignH(idx-1)=false;            
         end
         
         if (abs(meanSPV)>abs(meanSPVPre) && ((NystSign==2  || NystSign==3)))...
                 && Local.SPVDeltaH(idx-1)<Local.NystBeatDeltaMax  && abs(Local.meanSPVH(idx-1))>Local.minSPV...
-                && Local.dTime(Local.startSPVH_S(idx))<Local.endRotationTime && abs(Local.meanSPVH(idx-1))>Local.dSaccSPVsep
+                && Local.dTime(Local.startSPVH_S(idx))<endTime && abs(Local.meanSPVH(idx-1))>Local.dSaccSPVsep
             Local.NystSignH(idx-1)=false;
 %             Local.NystSignH(idx-1)=true;
             % eyey gaze to ....
         end
-        
-        if  Local.dTime(Local.stoppSPVH_S(idx))> Local.stopRotationTime+20 && abs(Local.meanSPVH(idx))>Local.minSPV
+        % --- nystagmus fades => outliers are smaller and can be tilted ---                
+        if  (Local.dTime(Local.startSPVH_S(idx))> (startTime+25) && abs(Local.meanSPVH(idx))>Local.minSPV)
             Local.NystSignH(idx)=false;
         end
-        if  Local.dTime(Local.stoppSPVH_S(idx))> Local.startRotationTime+20 && abs(Local.meanSPVH(idx))>Local.minSPV
+        if  (Local.dTime(Local.startSPVH_S(idx-1))> (startTime+25) && abs(Local.meanSPVH(idx-1))>Local.minSPV)
+            Local.NystSignH(idx-1)=false;
+        end
+        
+        if  Local.dTime(Local.startSPVH_S(idx))> endTime %&& abs(Local.meanSPVH(idx))>Local.minSPV
             Local.NystSignH(idx)=false;
+        end
+        if  Local.dTime(Local.startSPVH_S(idx))< startTime %&& abs(Local.meanSPVH(idx))>Local.minSPV
+            Local.NystSignH(idx)=false;
+        end
+        if  Local.dTime(Local.startSPVH_S(idx-1))> endTime %&& abs(Local.meanSPVH(idx))>Local.minSPV
+            Local.NystSignH(idx-1)=false;
+        end
+        if  Local.dTime(Local.startSPVH_S(idx-1))< startTime %&& abs(Local.meanSPVH(idx))>Local.minSPV
+            Local.NystSignH(idx-1)=false;
         end
         
         if abs(Local.meanSPVH(idx))>Local.dSaccSPVsep
@@ -84,7 +105,7 @@ function [outPlot, outPlotL, outPlotR ] = Eval_Fit( Local, idxStart, idxStop, pr
         if rotDir==-1 && pre && meanSPVPre<0
             Local.NystSignH(idx-1)=false;
         end
-        % --- if chair rot right all negative prerot SPV are invalid ---
+        % --- if chair rot right all negative postrot SPV are invalid ---
         if rotDir==-1 && ~pre && meanSPV>0
             Local.NystSignH(idx)=false;
         end
