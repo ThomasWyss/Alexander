@@ -21,7 +21,7 @@ function [ err ] = plotSPVV_Time(Plot)
     
 %     clear meanPartSPV;
     
-    figure('Name',['SPVV_Time ',Plot.Text.szPatient,' ',Plot.Text.szTest],'Position',[1, 1, 1920,1080]); % Fig 4
+    figure('Name',['SPVV_Time ',Plot.Text.szPatient,' ',Plot.Text.szSession,' ',Plot.Text.szTest],'Position',[1, 1, 1920,1080]); % Fig 4
     ax1=subplot(2,1,1);
     
     [~,endIdx] = size(Plot.meanSPVV);
@@ -50,7 +50,7 @@ function [ err ] = plotSPVV_Time(Plot)
     
     plot(ax1, Plot.headInertialTime,Plot.HeadMovVect,'r','linewidth', 1.2,'MarkerSize',7.0);
     ylim([-230 230]);
-    title(['SPVV at Time ', Plot.Text.szPatient,' ',Plot.Text.szTest]);
+    title(['SPVV at Time ', Plot.Text.szPatient,' ',Plot.Text.szSession,' ',Plot.Text.szTest]);
     xlabel('Time [s]');
     ylabel('SPV [\circ/s]');
 
@@ -96,7 +96,7 @@ function [ err ] = plotSPVV_Time(Plot)
     end
     
     grid on;
-    title(['Horizontal Position ', Plot.Text.szPatient,' ',Plot.Text.szTest]);
+    title(['Horizontal Position ', Plot.Text.szPatient,' ',Plot.Text.szSession,' ',Plot.Text.szTest]);
     ylabel('Pos [\circ]');
     xlabel('Time [s]');
     linkaxes([ax1, ax2], 'x');

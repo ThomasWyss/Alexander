@@ -1,8 +1,18 @@
 function [ outPlot ] = plotSPVH_ExpFitTime( Plot )
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+% ########################################################################% 
+% ## Calculate and plot exp functions of SPV
+% ########################################################################%
+% ## aktuell muss diese subroutine vor subroutinen ausgeführt werden
+% ## welche die parameter der exponential funktion benötigen
+% ########################################################################%
+% ##        C A U T I O N
+% ##        PreRotHR.SPV is goinf to be changed in this sub!!
+% ##        PreRotHL.SPV is goinf to be changed in this sub!!
+% ##        PoszRotHR.SPV is goinf to be changed in this sub!!
+% ##        PostRotHL.SPV is goinf to be changed in this sub!!
+% #########################################################################
     
-    figure('Name',['SPVH_ExpFit ', Plot.Text.szPatient,' ',Plot.Text.szTest],'Position',[1, 1, 1920,1080]); % Fig 4
+    figure('Name',['SPVH_ExpFit ', Plot.Text.szPatient,' ',Plot.Text.szSession,' ',Plot.Text.szTest],'Position',[1, 1, 1920,1080]); % Fig 4
     ax1=subplot(2,1,1);
     hold on;
     % --- median filter to suppress outliers ---
@@ -10,10 +20,11 @@ function [ outPlot ] = plotSPVH_ExpFitTime( Plot )
     Local.PreRotHL.SPV=medfilt1(Plot.PreRotHL.SPV,3);
     Local.PostRotHR.SPV=medfilt1(Plot.PostRotHR.SPV,3);
     Local.PostRotHL.SPV=medfilt1(Plot.PostRotHL.SPV,3);
+    % --- do a second median filtering on PostRot Data ---
     Local.PostRotHR.SPV=medfilt1(Plot.PostRotHR.SPV,3);
     Local.PostRotHL.SPV=medfilt1(Plot.PostRotHL.SPV,3);
 
-    title(['SPVH Nonlinear Exponential Fit ', Plot.Text.szPatient,' ',Plot.Text.szTest]);
+    title(['SPVH Nonlinear Exponential Fit ', Plot.Text.szPatient,' ',Plot.Text.szSession,' ',Plot.Text.szTest]);
     ylabel('SPV [\circ/s]');
 
     % --- chair rotation speed ---
@@ -66,7 +77,7 @@ function [ outPlot ] = plotSPVH_ExpFitTime( Plot )
           betaL(1).*exp(-(timePre-Plot.startRotationTime)./betaL(2)))/2;
     plot(ax1,timePre,dAvgPre,'m','linewidth', 1.2,'MarkerSize',7.0);
 
-    % --- prepare fuction for nonlinear fitting post rotation---
+    % --- prepare fuction for nonlinear fitting post rotation ---
     Func=@(b,x)(b(1).*exp(-(x-Plot.stopRotationTime)./b(2)));
     timePost=linspace(Plot.stopRotationTime,Plot.headInertialTime(end),200);
     
@@ -115,11 +126,13 @@ function [ outPlot ] = plotSPVH_ExpFitTime( Plot )
     % --- average SPV post rot ---
     plot(ax2,timePost,dAvgPost,'m','linewidth', 1.2,'MarkerSize',7.0);
 
-    % --- difference R L ---
-    plot(ax2,timePre,(Plot.meanPosHLpre-Plot.meanPosHRpre)./dDiffPre,'c','linewidth', 2.0,'MarkerSize',7.0);
-    plot(ax2,timePost,(Plot.meanPosHLpost-Plot.meanPosHRpost)./dDiffPost,'c','linewidth', 2.0,'MarkerSize',7.0);
+    % --- timeConstant R L ---
+    Plot.timeConstPre=(Plot.meanPosHLpre-Plot.meanPosHRpre)./dDiffPre;
+    Plot.timeConstPost = (Plot.meanPosHLpost-Plot.meanPosHRpost)./dDiffPost;
+    plot(ax2,timePre,Plot.timeConstPre,'c','linewidth', 2.0,'MarkerSize',7.0);
+    plot(ax2,timePost,Plot.timeConstPost,'c','linewidth', 2.0,'MarkerSize',7.0);
 
-    title(['SPVH TimeConstant Y = (YR-YL) / \DeltaPosition ', Plot.Text.szPatient,' ',Plot.Text.szTest]);
+    title(['SPVH TimeConstant Y = (YR-YL) / \DeltaPosition ', Plot.Text.szPatient,' ',Plot.Text.szSession,' ',Plot.Text.szTest]);
     ylabel('TimeConstant [s]');
     xlabel('Time');
     legend('Rotation Velocity \circ/s','average pre','average post','TimeConst pre','TimeConst post');
@@ -133,7 +146,12 @@ function [ outPlot ] = plotSPVH_ExpFitTime( Plot )
     saveas(gcf,szSaveName);
     szSaveName =['..\Data\Figures\',Plot.Text.szPatient,'_',Plot.Text.szTest,'_SPVH_ExpTimeFit.fig'];%,'Nystagmus_PosData',szPicFile,'.jpg'];
     saveas(gcf,szSaveName);
-
+    % --- timeConstant R L ---
+    
+    Plot.dDiffPre = dDiffPre;
+    Plot.dDiffPost = dDiffPost;
+    Plot.dAvgPre = dAvgPre;
+    Plot.dAvgPost = dAvgPost;
 	outPlot=Plot;
 end
 

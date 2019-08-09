@@ -75,13 +75,15 @@ NystBeatDeltaMax=18.0;
 % szFileName = 'p00001s001e022c002t011.mat';
 % szFileName = 'p00001s001e022c002t014.mat';  % jORGOS
 % szPathName = '..\Data\';
+szPathName = 'C:\Users\Public\CloudStation\INSEL\RotatingChair\Data'
 % szPathName = '..\Data\Jorgos\';
 % szPathName = '..\Data\Waser\';
 
 % ##### get names of one data file #####
 
 % [file,path] = uigetfile('..\Data\Data_2019_04_16\*e022*.mat');
-[file,path] = uigetfile('..\Data\t006\*e022*.mat');
+% [file,path] = uigetfile('..\Data\t006\*e022*.mat');
+[file,path] = uigetfile([szPathName,'\*e022*.mat']);
 szFileName=file;
 szPathName=path;
 
@@ -168,7 +170,7 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
         [maxXX,idxStartRotTime]=max(HeadMovVectDSmedDiff(1:800)); % there is no rotation starting before 15s        
         [minXX,idxEndRotTime]=min(HeadMovVectDSmedDiff);
         if idxStartRotTime>idxEndRotTime
-           [idxEndRotTime, idxStartRotTime] = deal(idxStartRotTime,idxEndRotTime) 
+           [idxEndRotTime, idxStartRotTime] = deal(idxStartRotTime,idxEndRotTime); 
         end      
         
         %----- calibration --------
@@ -234,12 +236,12 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
         
         % - if there are too many zero crossings -> no nystagmus -
         coeffZeroCross(nn)=size(SPVRaw)/size(idxZeroCrossH);
-        if coeffZeroCross(nn)<=iNbrZeroCrossIndex; % 4!
+        if coeffZeroCross(nn)<=iNbrZeroCrossIndex % 4!
            if bShowErrorMessage 
                 mode = struct('WindowStyle','modal',... 
                               'Interpreter','tex');
                 uiwait(errordlg('too many zero crossings -> no nystagmus','ERROR:',mode));
-           end;
+           end
            Out(nn_out).Nystagmus=false; %NO Nystagmus detected
         else
            Out(nn_out).Nystagmus=true;
@@ -366,6 +368,7 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
         Plot.iSignals=iSignals;
         Plot.Text.szFileName=szFileName;
         Plot.Text.szPatient=szPatient;
+        Plot.Text.szSession=szSession;
         Plot.Text.szTest=szTest;
         Plot.HeadMovVect=HeadMovVect;
         Plot.headInertialTime=headInertialTime;
@@ -407,7 +410,8 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
 
 %             plotSPVH_Time(Plot);
 %             plotSPVH_Position(Plot,Out(nn_out)); 
-            Plot=plotSPVH_ExpFitTime(Plot);
+%             Plot=plotSPVH_ExpFitTime(Plot);
+%             Plot=plotTimeConstH_avgSPV(Plot);
         end
         
         % --- all vertical data ---
@@ -447,6 +451,12 @@ for nn=1:iFileNbr      % if start at 2 because first is default !!
 %             plotSPVV_Time(Plot);
 %             plotSPVV_Position(Plot,Out(nn_out));  
             plotSPVV_ExpFitTime(Plot);
+            
+            writetable(struct2table(Plot.PostRotHR),'Delimiter',';');
+            [~, iSz]=size(Plot.PostRotHR.SPV);
+            
+            abc=Plot.PostRotHR;
+            struct2csv(Plot.PostRotHR,'PostRotHR.csv');
        end
         
         nn_out=nn_out+1;

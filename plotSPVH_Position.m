@@ -19,7 +19,7 @@ function [ err ] = plotSPVH_Position(Plot,Out)
 
     clear meanPartSPV;
     
-    figure('Name',['SPVH_Position ', Plot.Text.szPatient,' ',Plot.Text.szTest],'Position',[1, 1, 1920,1080]); % Fig 4
+    figure('Name',['SPVH_Position ', Plot.Text.szPatient,' ',Plot.Text.szSession,' ',Plot.Text.szTest],'Position',[1, 1, 1920,1080]); % Fig 4
     x=linspace(-40,40,100);
     subplot(2,1,1);
 
@@ -51,7 +51,7 @@ function [ err ] = plotSPVH_Position(Plot,Out)
     pm=polyfit(pp(:,1),pp(:,2),1);
     plot(x,pm(1)*x+pm(2),'g','linewidth', 1.2); hold on;
     
-    title(['SPVH at Position ', Plot.Text.szPatient,' ',Plot.Text.szTest]);
+    title(['SPVH at Position ', Plot.Text.szPatient,' ',Plot.Text.szSession,' ',Plot.Text.szTest]);
     xlabel('Horizontal Position [\circ]');
     ylabel('SPV [\circ/s]');
     xlim([-40,40]);
@@ -98,7 +98,7 @@ function [ err ] = plotSPVH_Position(Plot,Out)
     end
     
     grid on;
-    title(['Horizontal Position ', Plot.Text.szPatient,' ',Plot.Text.szTest]);
+    title(['Horizontal Position ', Plot.Text.szPatient,' ',Plot.Text.szSession,' ',Plot.Text.szTest]);
     ylabel('Position [\circ]');
     legend('Eye Pos. H','Zero Crossing H','Begin H','End H','Nystagmus Beat H,','ABC');
     ylim([-50,40]);

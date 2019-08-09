@@ -21,11 +21,11 @@ function [ err ] = plotSPVH_Time(Plot)
     
 %     clear meanPartSPV;
     
-    figure('Name',['SPVH_Time ', Plot.Text.szPatient,' ',Plot.Text.szTest],'Position',[1, 1, 1920,1080]); % Fig 4
+    figure('Name',['SPVH_Time ', Plot.Text.szPatient,' ',Plot.Text.szSession,' ',Plot.Text.szTest],'Position',[1, 1, 1920,1080]); % Fig 4
     ax1=subplot(2,1,1);
     
     [~,endIdx] = size(Plot.meanSPVH);
-    cc=1;
+%     cc=1;
     for jj = 2:endIdx-1       
 
         if abs(Plot.meanSPVH(jj))>Plot.minSPV
@@ -39,9 +39,9 @@ function [ err ] = plotSPVH_Time(Plot)
                 plot(Plot.dTime(Plot.startSPVH_S(jj)),Plot.meanSPVH(jj),'co','linewidth', 1.2,'MarkerSize',7.0); hold on;                   
             end                
         
-           pp(cc,1) = Plot.dTime(Plot.startSPVH_S(jj));
-           pp(cc,2) = Plot.meanSPVH(jj);
-           cc=cc+1;
+%            pp(cc,1) = Plot.dTime(Plot.startSPVH_S(jj));
+%            pp(cc,2) = Plot.meanSPVH(jj);
+%            cc=cc+1;
         end
         if Plot.NystSignH(jj)==false && abs(Plot.meanSPVH(jj))>Plot.minSPV          
 %            plot(Plot.dTime(Plot.startSPVH_S(jj)),meanSPV,'ro','linewidth', 1.2,'MarkerSize',7.0); hold on; 
@@ -51,7 +51,7 @@ function [ err ] = plotSPVH_Time(Plot)
     plot(ax1, Plot.headInertialTime,Plot.HeadMovVect,'r','linewidth', 1.2,'MarkerSize',7.0);
 %     xlim([108.8 110.4]);
     ylim([-230 230]);
-    title(['SPVH at Time ', Plot.Text.szPatient,' ',Plot.Text.szTest]);
+    title(['SPVH at Time ', Plot.Text.szPatient,' ',Plot.Text.szSession,' ',Plot.Text.szTest]);
     xlabel('Time [s]');
     ylabel('SPV [\circ/s]');
 
@@ -98,7 +98,7 @@ function [ err ] = plotSPVH_Time(Plot)
     end
     
     grid on;
-    title(['Horizontal Position ', Plot.Text.szPatient,' ',Plot.Text.szTest]);
+    title(['Horizontal Position ', Plot.Text.szPatient,' ',Plot.Text.szSession,' ',Plot.Text.szTest]);
     ylabel('Pos [\circ]');
     xlabel('Time [s]');
     ylim([-100 100]);
